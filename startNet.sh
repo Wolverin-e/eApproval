@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+source ./.env
+
 export PATH=${PWD}/bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/configs
 
@@ -121,8 +123,51 @@ function checkResult(){
     fi
 }
 
+function networkUp(){
+
+    echo
+    echo "#######################################"
+    echo "####### Starting The Network  #########"
+    echo "#######################################"
+
+    docker-compose \
+    -f configs/docker-compose-cli.yaml \
+    -f configs/docker-compose-couch.yaml \
+    up -d
+
+    echo "#######################################"
+    docker ps --all
+    
+    echo
+}
+
+function networkDown(){
+
+    echo
+    echo "#######################################"
+    echo "####### Stopping The Network  #########"
+    echo "#######################################"
+
+    docker-compose \
+    -f configs/docker-compose-cli.yaml \
+    -f configs/docker-compose-couch.yaml \
+    down --volumes --remove-orphans
+
+    echo "#######################################"
+    docker ps --all
+    
+    echo
+}
+
+
+###################################################
+
 export CHANNEL_NAME=mychannel
 
-clearThings
-generateCerts
-generateChannelArtifacts
+# clearThings
+# generateCerts
+# generateChannelArtifacts
+
+# networkUp
+
+networkDown

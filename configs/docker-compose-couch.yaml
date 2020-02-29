@@ -1,7 +1,7 @@
 version: '2'
 
 networks:
-  byfn:
+  eProcurement:
 
 services:
   couchdb0:
@@ -13,7 +13,7 @@ services:
     ports:
       - "5984:5984"
     networks:
-      - byfn
+      - eProcurement
 
   peer0.org1.example.com:
     environment:
@@ -31,11 +31,11 @@ services:
       - COUCHDB_USER=
       - COUCHDB_PASSWORD=
     ports:
-      - "6984:5984"
+      - "7984:5984"
     networks:
-      - byfn
+      - eProcurement
 
-  peer1.org1.example.com:
+  peer0.org2.example.com:
     environment:
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
@@ -43,43 +43,3 @@ services:
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     depends_on:
       - couchdb1
-
-  couchdb2:
-    container_name: couchdb2
-    image: couchdb:2.3
-    environment:
-      - COUCHDB_USER=
-      - COUCHDB_PASSWORD=
-    ports:
-      - "7984:5984"
-    networks:
-      - byfn
-
-  peer0.org2.example.com:
-    environment:
-      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
-    depends_on:
-      - couchdb2
-
-  couchdb3:
-    container_name: couchdb3
-    image: couchdb:2.3
-    environment:
-      - COUCHDB_USER=
-      - COUCHDB_PASSWORD=
-    ports:
-      - "8984:5984"
-    networks:
-      - byfn
-
-  peer1.org2.example.com:
-    environment:
-      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
-      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
-    depends_on:
-      - couchdb3
