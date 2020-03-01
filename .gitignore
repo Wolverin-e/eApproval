@@ -2,3 +2,6 @@ bin
 */*.DS_Store
 configs/channel-artifacts
 configs/crypto-config
+
+vendor/
+# chaincode/

@@ -7,6 +7,22 @@ export PATH=${PWD}/bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/configs
 
 
+function printHelp(){
+    echo
+    echo "Usage: "
+    echo "  startNet.sh <mode>"
+    echo "      <mode> - one of the 'up', 'down', 'restart', 'generate', 'clear'"
+    echo "        - 'up' - Bring Up The Network"
+    echo "        - 'down' - Tear Down The Services"
+    echo "        - 'clear' - Clear the Crypto Material"
+    echo "        - 'restart' - Restart The Network"
+    echo "        - 'generate' - Generate Crypto-Config & Channel-Artifacts"
+    echo
+}
+
+
+
+
 function generateCerts(){
     which cryptogen > /dev/null
     if [ $? -ne 0 ]; then
@@ -96,8 +112,11 @@ function generateChannelArtifacts(){
 
 function clearThings(){
 
-    # CLEARING THE SCEEN FIRST
-    clear
+    CLEAR_SCREEN=$1
+    # CLEARING THE SCEEN FIRST IF NO ARGUMENTS HAVE BEEN PASSED
+    if [ "${CLEAR_SCREEN}" == "" ]; then
+        clear
+    fi
 
     echo
     echo "#################################################################"
@@ -135,9 +154,14 @@ function networkUp(){
     -f configs/docker-compose-couch.yaml \
     up -d
 
+    checkResult
+
+    echo
+    echo "#######################################"
+    echo "############  Containers  #############"
     echo "#######################################"
     docker ps --all
-    
+    echo "#######################################"
     echo
 }
 
@@ -153,21 +177,43 @@ function networkDown(){
     -f configs/docker-compose-couch.yaml \
     down --volumes --remove-orphans
 
+    echo
+    echo
+    echo "#######################################"
+    echo "############  Containers  #############"
     echo "#######################################"
     docker ps --all
-    
+    echo "#######################################"
     echo
 }
 
 
 ###################################################
 
-export CHANNEL_NAME=mychannel
+MODE=$1
+shift
 
-# clearThings
-# generateCerts
-# generateChannelArtifacts
-
-# networkUp
-
-networkDown
+if [ "${MODE}" == "up" ]; then
+    clearThings
+    generateCerts
+    generateChannelArtifacts
+    networkUp
+elif [ "${MODE}" == "down" ]; then
+    networkDown
+    clearThings 1
+elif [ "${MODE}" == "restart" ]; then
+    networkDown
+    clearThings
+    generateCerts
+    generateChannelArtifacts
+    networkUp
+elif [ "${MODE}" == "generate" ]; then
+    clearThings
+    generateCerts
+    generateChannelArtifacts
+elif [ "${MODE}" == "clear" ]; then
+    clearThings
+else
+    printHelp
+    exit 1
+fi
