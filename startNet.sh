@@ -1,13 +1,14 @@
-
 #!/bin/bash
 
+# IMPORTING THE ENVIRONMENT VARIABLES
 source ./.env
-
 export PATH=${PWD}/bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/configs
 
 
+# FUNCTION TO PRINT HELP
 function printHelp(){
+
     echo
     echo "Usage: "
     echo "  startNet.sh <mode>"
@@ -20,10 +21,24 @@ function printHelp(){
     echo
 }
 
+# FUNCTION TO CHECK FOR ERRORS
+function checkResult(){
 
+    res=$?
+    set +x
+    if [ $res -ne 0 ]
+    then
+        echo ERROR
+        exit 1
+    else
+        echo "----- SUCCESS ----- "
+        echo
+    fi
+}
 
-
+# FUNCTION TO GENERATE PKI CERTIFICATES
 function generateCerts(){
+
     which cryptogen > /dev/null
     if [ $? -ne 0 ]; then
         echo "Please check bin folder for cryptogen tool."
@@ -44,7 +59,6 @@ function generateCerts(){
     set -x
     cryptogen generate --config=./crypto-config.yaml
     checkResult
-    set +x
 
     popd > /dev/null
     ################ !!!!!!!!!! CCP GENERATION LEFT
@@ -52,6 +66,7 @@ function generateCerts(){
     echo
 }
 
+# FUNCTION TO GENERATE CHANNEL ARTIFACTS (GENISIS BLOCK, CHANNEL Tx, ANCHOR PEERs Txs)
 function generateChannelArtifacts(){
 
     which configtxgen > /dev/null
@@ -59,15 +74,12 @@ function generateChannelArtifacts(){
         echo "Please check bin folder for configtxgen tool."
         exit 1
     fi
-    
-    pushd ./configs > /dev/null
 
+    pushd ./configs > /dev/null
 
     echo "##########################################################"
     echo "#########  Generating Orderer Genesis block ##############"
     echo "##########################################################"
-    # Note: For some unknown reason (at least for now) the block file can't be
-    # named orderer.genesis.block or the orderer will fail to launch!
     set -x
     configtxgen -profile SampleMultiNodeEtcdRaft -channelID byfn-sys-channel \
         -outputBlock ./channel-artifacts/genesis.block
@@ -110,38 +122,31 @@ function generateChannelArtifacts(){
     echo
 }
 
+# FUNCTION TO CLEAR PREVIOUSLY GENERATED CERTS AND ARTIFACTS
 function clearThings(){
 
+    # GETTING THE ARGUMENTS PASSED TO THE FUNCTION.
     CLEAR_SCREEN=$1
-    # CLEARING THE SCEEN FIRST IF NO ARGUMENTS HAVE BEEN PASSED
+
+    # CLEARING THE SCEEN FIRST IF NO ARGUMENTS HAVE BEEN PASSED.
     if [ "${CLEAR_SCREEN}" == "" ]; then
         clear
     fi
+
+    # $(docker ps --all | awk '{ORS=" "} ($2 ~ /dev-*/) {print $1}')
+    # $(docker images | awk '{ORS=" "} ($1 ~ /dev-peer*/) {print $3}')
 
     echo
     echo "#################################################################"
     echo "####### Clearing Generated Certificates And Artificats  #########"
     echo "#################################################################"
-    
     set -x
     ./clearFolders.sh
     checkResult
     set +x
 }
 
-function checkResult(){
-    res=$?
-    set +x
-    if [ $res -ne 0 ]
-    then
-        echo ERROR
-        exit 1
-    else
-        echo "----- SUCCESS ----- "
-        echo
-    fi
-}
-
+# FUNCTION TO START THE CONTAINERS
 function networkUp(){
 
     echo
@@ -165,6 +170,7 @@ function networkUp(){
     echo
 }
 
+# FUNCTION TO STOP AND REMOVE THE CONTAINERS
 function networkDown(){
 
     echo
@@ -190,9 +196,11 @@ function networkDown(){
 
 ###################################################
 
+# GETTING THE ARGUMENT PASSED WITH THE COMMAND
 MODE=$1
 shift
 
+# WORKING ACCORDING TO THE ARGUMENT
 if [ "${MODE}" == "up" ]; then
     clearThings
     generateCerts

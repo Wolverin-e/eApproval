@@ -2,19 +2,64 @@
 
 source ./.env
 export PATH=${PWD}/bin:${PWD}:$PATH
+export CC_RUNTIME_LANGUAGE=golang
+export CC_SRC_PATH=/root/chaincode/fabcar/go
 
-echo "Vendoring Go dependencies ..."
-CC_RUNTIME_LANGUAGE=golang
-CC_SRC_PATH=github.com/hyperledger/fabric-samples/chaincode/fabcar/go
+# FUNCTION TO PRINT HELP
+function printhelp(){
+  
+  echo 
+  echo "Usage:"
+  echo "  deploy.sh [-a] [-h] [-n] [-i] [-c]"
+  echo "  -a - DO INITIAL SETUP AND INSTALL CHAINCODE"
+  echo "  -n - NO CHAINCODE INSTALLATION"
+  echo "  -c - CHAINCODE ONLY"
+  echo "  -i - IGNORE ERRORS"
+  echo "  -h - HELP"
+  echo
+}
 
-pushd ./configs/chaincode/fabcar/go
-GO111MODULE=on go mod vendor
-popd
+# FUNCTION TO CHECK FOR ERRORS
+function checkResult(){
 
-echo
+  res=$?
+  if [ $res -ne 0 ]
+  then
+    echo "!!!!! ERROR !!!!!"
+    if [ "${IGNORE_ERRORS}" != "true" ]; then
+      exit 1
+    fi
+  else
+    echo "----- SUCCESS -----"
+    echo
+  fi
+}
+
+
+while getopts "h?ncai" opt; do
+  case "$opt" in
+  h | \?)
+    printhelp
+    ;;
+  n)
+    CHAIN_CODE_ONLY=false
+    NO_CHAINCODE=true
+    ;;
+  c)
+    CHAIN_CODE_ONLY=true
+    NO_CHAINCODE=false
+    ;;
+  a)
+    CHAIN_CODE_ONLY=false
+    NO_CHAINCODE=false
+    ;;
+  i)
+    IGNORE_ERRORS=true
+  esac
+done
 
 # Setting The Paths..
-CONFIG_ROOT=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+CONFIG_ROOT=/root/crypto
 #----------------------------------#
 ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
 ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
@@ -50,108 +95,195 @@ peer
 --orderer=${DEFAULT_ORDERER}
 "
 
+if [ "${CHAIN_CODE_ONLY}" != "true" ]; then
 
-echo "Creating channel..."
-${PEER0_ORG1} channel create -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx
+  echo
+  echo "################################"
+  echo "####### CREATING CHANNEL #######"
+  echo "################################"
+  ${PEER0_ORG1} channel create -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx
+  checkResult
+  echo
 
-echo "Having all peers join the channel..."
-${PEER0_ORG1} channel join -b $CHANNEL_NAME.block
-sleep 3
-${PEER0_ORG2} channel join -b $CHANNEL_NAME.block
-sleep 3
 
-echo "Updating Anchor Peers..."
-${PEER0_ORG1} channel update -c $CHANNEL_NAME -f ./channel-artifacts/Org1MSPanchors.tx
-${PEER0_ORG2} channel update -c $CHANNEL_NAME -f ./channel-artifacts/Org2MSPanchors.tx
+  echo
+  echo "################################"
+  echo "####### JOINING CHANNEL ########"
+  echo "################################"
+  ${PEER0_ORG1} channel join -b $CHANNEL_NAME.block
+  checkResult
+  sleep 3
 
-echo "Packaging smart contract on peer0.org1.example.com"
-${PEER0_ORG1} lifecycle chaincode package \
-  fabcar.tar.gz \
-  --path "${CC_SRC_PATH}" \
-  --lang "${CC_RUNTIME_LANGUAGE}" \
-  --label fabcarv1
+  ${PEER0_ORG2} channel join -b $CHANNEL_NAME.block
+  checkResult
+  sleep 3
+  echo
 
-echo "Installing smart contract on peer0.org1.example.com"
-${PEER0_ORG1} lifecycle chaincode install \
-  fabcar.tar.gz
 
-echo "Determining package ID for smart contract on peer0.org1.example.com"
-REGEX='Package ID: (.*), Label: fabcarv1'
-if [[ `${PEER0_ORG1} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
-  PACKAGE_ID_ORG1=${BASH_REMATCH[1]}
-else
-  echo Could not find package ID for fabcarv1 chaincode on peer0.org1.example.com
-  exit 1
+  echo
+  echo "######################################"
+  echo "####### UPDATING ANCHOR PEERS ########"
+  echo "######################################"
+  ${PEER0_ORG1} channel update -c $CHANNEL_NAME -f ./channel-artifacts/Org1MSPanchors.tx
+  checkResult
+
+  ${PEER0_ORG2} channel update -c $CHANNEL_NAME -f ./channel-artifacts/Org2MSPanchors.tx
+  checkResult
+  echo
+
 fi
 
-echo "Approving smart contract for org1"
-${PEER0_ORG1} lifecycle chaincode approveformyorg \
-  --package-id ${PACKAGE_ID_ORG1} \
-  --channelID mychannel \
-  --name fabcar \
-  --version 1.0 \
-  --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
-  --sequence 1 \
-  --waitForEvent
+# INSTALLING CHAINCODE
+if [ "${NO_CHAINCODE}" != "true" ]; then
 
-echo "Packaging smart contract on peer0.org2.example.com"
-${PEER0_ORG2} lifecycle chaincode package \
-  fabcar.tar.gz \
-  --path "$CC_SRC_PATH" \
-  --lang "$CC_RUNTIME_LANGUAGE" \
-  --label fabcarv1
+  echo "Vendoring Go dependencies ..."
+  pushd ./configs/chaincode/fabcar/go
+  GO111MODULE=on go mod vendor
+  popd
+  echo
 
-echo "Installing smart contract on peer0.org2.example.com"
-${PEER0_ORG2} lifecycle chaincode install fabcar.tar.gz
 
-echo "Determining package ID for smart contract on peer0.org2.example.com"
-REGEX='Package ID: (.*), Label: fabcarv1'
-if [[ `${PEER0_ORG2} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
-  PACKAGE_ID_ORG2=${BASH_REMATCH[1]}
-else
-  echo Could not find package ID for fabcarv1 chaincode on peer0.org2.example.com
-  exit 1
+  echo
+  echo "##############################################################"
+  echo "####### PACKAGING CHAINCODE ON peer0.org1.example.com ########"
+  echo "##############################################################"
+  ${PEER0_ORG1} lifecycle chaincode package \
+    fabcar.tar.gz \
+    --path "${CC_SRC_PATH}" \
+    --lang "${CC_RUNTIME_LANGUAGE}" \
+    --label fabcarv1
+  checkResult
+  echo
+
+
+  echo
+  echo "##############################################################"
+  echo "####### INSTALLING CHAINCODE ON peer0.org1.example.com #######"
+  echo "##############################################################"
+  ${PEER0_ORG1} lifecycle chaincode install \
+    fabcar.tar.gz
+  checkResult
+  echo
+
+  REGEX='Package ID: (.*), Label: fabcarv1'
+  if [[ `${PEER0_ORG1} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
+    PACKAGE_ID_ORG1=${BASH_REMATCH[1]}
+  else
+    echo Could not find package ID for fabcarv1 chaincode on peer0.org1.example.com
+    exit 1
+  fi
+
+
+  echo
+  echo "########################################################"
+  echo "####### APPROVING CHAINCODE DEFINATION FOR ORG1 ########"
+  echo "########################################################"
+  ${PEER0_ORG1} lifecycle chaincode approveformyorg \
+    --package-id ${PACKAGE_ID_ORG1} \
+    --channelID mychannel \
+    --name fabcar \
+    --version 1.0 \
+    --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
+    --sequence 1 \
+    --waitForEvent
+  checkResult
+  echo
+
+
+  echo
+  echo "##############################################################"
+  echo "####### PACKAGING CHAINCODE ON peer0.org2.example.com ########"
+  echo "##############################################################"
+  ${PEER0_ORG2} lifecycle chaincode package \
+    fabcar.tar.gz \
+    --path "$CC_SRC_PATH" \
+    --lang "$CC_RUNTIME_LANGUAGE" \
+    --label fabcarv1
+  checkResult
+  echo
+
+
+  echo
+  echo "##############################################################"
+  echo "####### INSTALLING CHAINCODE ON peer0.org2.example.com #######"
+  echo "##############################################################"
+  ${PEER0_ORG2} lifecycle chaincode install fabcar.tar.gz
+  checkResult
+  echo
+
+  REGEX='Package ID: (.*), Label: fabcarv1'
+  if [[ `${PEER0_ORG2} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
+    PACKAGE_ID_ORG2=${BASH_REMATCH[1]}
+  else
+    echo Could not find package ID for fabcarv1 chaincode on peer0.org2.example.com
+    exit 1
+  fi
+
+
+  echo
+  echo "########################################################"
+  echo "####### APPROVING CHAINCODE DEFINATION FOR ORG2 ########"
+  echo "########################################################"
+  ${PEER0_ORG2} lifecycle chaincode approveformyorg \
+    --package-id ${PACKAGE_ID_ORG2} \
+    --channelID mychannel \
+    --name fabcar \
+    --version 1.0 \
+    --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
+    --sequence 1 \
+    --waitForEvent
+  checkResult
+  echo
+
+
+  echo
+  echo "################################################"
+  echo "####### COMMITING CHAINCODE DEFINATION  ########"
+  echo "################################################"
+  ${PEER0_ORG1} lifecycle chaincode commit \
+    --channelID mychannel \
+    --name fabcar \
+    --version 1.0 \
+    --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
+    --sequence 1 \
+    --waitForEvent \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+
+  echo
+  echo "######################################################"
+  echo "####### INVOKING INIT IN CHAINCODE DEFINATION ########"
+  echo "######################################################"
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n fabcar \
+    -c '{"function":"initLedger","Args":[]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+
+  echo
+  echo "###################################"
+  echo "####### QUERYING CHAINCODE ########"
+  echo "###################################"
+  ${PEER0_ORG1} chaincode query \
+    -C mychannel \
+    -n fabcar \
+    -c '{"function":"queryAllCars","Args":[]}' \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
 fi
-
-echo "Approving smart contract for org2"
-${PEER0_ORG2} lifecycle chaincode approveformyorg \
-  --package-id ${PACKAGE_ID_ORG2} \
-  --channelID mychannel \
-  --name fabcar \
-  --version 1.0 \
-  --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
-  --sequence 1 \
-  --waitForEvent
-
-echo "Committing smart contract"
-${PEER0_ORG1} lifecycle chaincode commit \
-  --channelID mychannel \
-  --name fabcar \
-  --version 1.0 \
-  --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
-  --sequence 1 \
-  --waitForEvent \
-  --peerAddresses peer0.org1.example.com:7051 \
-  --peerAddresses peer0.org2.example.com:9051 \
-  --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
-  --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
-
-echo "Submitting initLedger transaction to smart contract on mychannel"
-# echo "The transaction is sent to all of the peers so that chaincode is built before receiving the following requests"
-${PEER0_ORG1} chaincode invoke \
-  -C mychannel \
-  -n fabcar \
-  -c '{"function":"initLedger","Args":[]}' \
-  --waitForEvent \
-  --waitForEventTimeout 300s \
-  --peerAddresses peer0.org1.example.com:7051 \
-  --peerAddresses peer0.org2.example.com:9051 \
-  --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
-  --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
-
-${PEER0_ORG1} chaincode query \
-  -C mychannel \
-  -n fabcar \
-  -c '{"function":"queryAllCars","Args":[]}' \
-  --peerAddresses peer0.org1.example.com:7051 \
-  --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
