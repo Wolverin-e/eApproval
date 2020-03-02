@@ -168,6 +168,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   REGEX='Package ID: (.*), Label: fabcarv1'
   if [[ `${PEER0_ORG1} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
     PACKAGE_ID_ORG1=${BASH_REMATCH[1]}
+    echo $PACKAGE_ID_ORG1
   else
     echo Could not find package ID for fabcarv1 chaincode on peer0.org1.example.com
     exit 1
@@ -214,6 +215,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   REGEX='Package ID: (.*), Label: fabcarv1'
   if [[ `${PEER0_ORG2} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
     PACKAGE_ID_ORG2=${BASH_REMATCH[1]}
+    echo $PACKAGE_ID_ORG2
   else
     echo Could not find package ID for fabcarv1 chaincode on peer0.org2.example.com
     exit 1
