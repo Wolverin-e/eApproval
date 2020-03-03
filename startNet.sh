@@ -190,14 +190,14 @@ function networkDown(){
     echo
 
 
-    # $(docker ps --all | awk '{ORS=" "} ($2 ~ /dev-*/) {print $1}')
-    # $(docker images | awk '{ORS=" "} ($1 ~ /dev-peer*/) {print $3}')
+    # $(docker ps --all | awk '{ORS=" "} ($2 ~ /dev-peer.*/) {print $1}')
+    # $(docker images | awk '{ORS=" "} ($1 ~ /dev-peer.*/) {print $3}')
 
     echo
     echo "##########################################################"
     echo "############  REMOVING CHAINCODE CONTAINERS  #############"
     echo "##########################################################"
-    CONTAINER_IDS=$(docker ps --all | awk '{ORS=" "} ($2 ~ /dev-*/) {print $1}')
+    CONTAINER_IDS=$(docker ps --all | awk '{ORS=" "} ($2 ~ /dev-peer.*/) {print $1}')
     if [ -z "$CONTAINER_IDS" -o "$CONTAINER_IDS" == " " ]; then
         echo "---- No containers available for deletion ----"
     else
@@ -212,7 +212,7 @@ function networkDown(){
     echo "##########################################################"
     echo "##############  REMOVING CHAINCODE IMAGES  ###############"
     echo "##########################################################"
-    DOCKER_IMAGE_IDS=$(docker images | awk '{ORS=" "} ($1 ~ /dev-peer*/) {print $3}')
+    DOCKER_IMAGE_IDS=$(docker images | awk '{ORS=" "} ($1 ~ /dev-peer.*/) {print $3}')
     if [ -z "$DOCKER_IMAGE_IDS" -o "$DOCKER_IMAGE_IDS" == " " ]; then
         echo "---- No images available for deletion ----"
     else

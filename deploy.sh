@@ -35,6 +35,10 @@ function checkResult(){
   fi
 }
 
+if [ "${1}" == "" ]; then
+  printhelp
+  exit 1
+fi
 
 while getopts "h?ncai" opt; do
   case "$opt" in
@@ -177,7 +181,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "########################################################"
-  echo "####### APPROVING CHAINCODE DEFINATION FOR ORG1 ########"
+  echo "####### APPROVING CHAINCODE DEFINITION FOR ORG1 ########"
   echo "########################################################"
   ${PEER0_ORG1} lifecycle chaincode approveformyorg \
     --package-id ${PACKAGE_ID_ORG1} \
@@ -224,7 +228,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "########################################################"
-  echo "####### APPROVING CHAINCODE DEFINATION FOR ORG2 ########"
+  echo "####### APPROVING CHAINCODE DEFINITION FOR ORG2 ########"
   echo "########################################################"
   ${PEER0_ORG2} lifecycle chaincode approveformyorg \
     --package-id ${PACKAGE_ID_ORG2} \
@@ -240,7 +244,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "################################################"
-  echo "####### COMMITING CHAINCODE DEFINATION  ########"
+  echo "####### COMMITING CHAINCODE DEFINITION  ########"
   echo "################################################"
   ${PEER0_ORG1} lifecycle chaincode commit \
     --channelID mychannel \
@@ -259,7 +263,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "######################################################"
-  echo "####### INVOKING INIT IN CHAINCODE DEFINATION ########"
+  echo "####### INVOKING INIT IN CHAINCODE DEFINITION ########"
   echo "######################################################"
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \

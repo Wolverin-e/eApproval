@@ -1,6 +1,7 @@
 source ./.env
 export PATH=${PWD}/bin:${PWD}:$PATH
 
+# FUNCTION TO CHECK RESULTS
 function checkResult(){
 
   res=$?
@@ -15,6 +16,55 @@ function checkResult(){
     echo
   fi
 }
+
+# FUNCTION TO PRINT HELP
+function printhelp(){
+
+  echo
+  echo "Usage:"
+  echo "  upgrade.sh [-n <name>] [-l <lable>] [-v <version>] [-s <sequence>] [-p <path>] [-h]"
+  echo "  -v <version> - Version of The chaincode"
+  echo "  -s <sequence> - sequence of chaincodes"
+  echo "  -p <path> - Path inside the container"
+  echo "  -n <name> - Name of the Chaincode"
+  echo "  -l <lable> - Lable to be given"
+  echo "  -h - Get Help"
+  echo
+  echo "  Without any options it will run with defaults."
+  echo
+
+  exit 0
+}
+
+#  CC_NAME, CC_LABLE, CC_VERSION, CC_SEQUENCE, CC_RUNTIME, CC_SRC_PATH
+export CC_NAME=fabcar
+export CC_LABLE=fabcarv2
+export CC_VERSION=2.0
+export CC_SEQUENCE=2
+export CC_RUNTIME_LANGUAGE=golang
+export CC_SRC_PATH=/root/chaincode/fabcar2/go
+
+while getopts "h?n:l:v:s:p:" opt; do
+  case "$opt" in
+  h | \?)
+    printhelp
+    ;;
+  n)
+    CC_NAME=$OPTARG
+    ;;
+  l)
+    CC_LABLE=$OPTARG
+    ;;
+  v)
+    CC_VERSION=$OPTARG
+    ;;
+  s)
+    CC_SEQUENCE=$OPTARG
+    ;;
+  p)
+    CC_SRC_PATH=$OPTARG
+  esac
+done
 
 CONFIG_ROOT=/root/crypto
 #----------------------------------#
@@ -57,15 +107,6 @@ peer
 # popd
 # echo
 
-#  CC_NAME, CC_LABLE, CC_VERSION, CC_SEQUENCE, CC_RUNTIME, CC_SRC_PATH
-export CC_NAME=fabcar
-export CC_LABLE=fabcarv2
-export CC_VERSION=2.0
-export CC_SEQUENCE=2
-export CC_RUNTIME_LANGUAGE=golang
-export CC_SRC_PATH=/root/chaincode/fabcar2/go
-
-
 echo
 echo "##############################################################"
 echo "####### PACKAGING CHAINCODE ON peer0.org1.example.com ########"
@@ -100,7 +141,7 @@ fi
 
 echo
 echo "########################################################"
-echo "####### APPROVING CHAINCODE DEFINATION FOR ORG1 ########"
+echo "####### APPROVING CHAINCODE DEFINITION FOR ORG1 ########"
 echo "########################################################"
 ${PEER0_ORG1} lifecycle chaincode approveformyorg \
 --package-id ${PACKAGE_ID_ORG1} \
@@ -147,7 +188,7 @@ fi
 
 echo
 echo "########################################################"
-echo "####### APPROVING CHAINCODE DEFINATION FOR ORG2 ########"
+echo "####### APPROVING CHAINCODE DEFINITION FOR ORG2 ########"
 echo "########################################################"
 ${PEER0_ORG2} lifecycle chaincode approveformyorg \
 --package-id ${PACKAGE_ID_ORG2} \
@@ -163,7 +204,7 @@ sleep 2
 
 echo
 echo "################################################"
-echo "####### COMMITING CHAINCODE DEFINATION  ########"
+echo "####### COMMITING CHAINCODE DEFINITION  ########"
 echo "################################################"
 ${PEER0_ORG1} lifecycle chaincode commit \
 --channelID mychannel \
@@ -182,7 +223,7 @@ echo
 
 echo
 echo "######################################################"
-echo "####### INVOKING INIT IN CHAINCODE DEFINATION ########"
+echo "####### INVOKING INIT IN CHAINCODE DEFINITION ########"
 echo "######################################################"
 ${PEER0_ORG1} chaincode invoke \
 -C mychannel \
