@@ -3,5 +3,9 @@ bin
 configs/channel-artifacts
 configs/crypto-config
 
+# GO
 vendor/
 # chaincode/
+
+# node-modules
+node_modules/
