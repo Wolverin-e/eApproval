@@ -2,8 +2,6 @@
 
 source ./.env
 export PATH=${PWD}/bin:${PWD}:$PATH
-export CC_RUNTIME_LANGUAGE=golang
-export CC_SRC_PATH=/root/chaincode/fabcar/go
 
 # FUNCTION TO PRINT HELP
 function printhelp(){
@@ -140,11 +138,11 @@ fi
 # INSTALLING CHAINCODE
 if [ "${NO_CHAINCODE}" != "true" ]; then
 
-  echo "Vendoring Go dependencies ..."
-  pushd ./configs/chaincode/fabcar/go
-  GO111MODULE=on go mod vendor
-  popd
-  echo
+  # echo "Vendoring Go dependencies ..."
+  # pushd ./configs/chaincode/fabcar/go
+  # GO111MODULE=on go mod vendor
+  # popd
+  # echo
 
 
   echo
@@ -152,10 +150,10 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "####### PACKAGING CHAINCODE ON peer0.org1.example.com ########"
   echo "##############################################################"
   ${PEER0_ORG1} lifecycle chaincode package \
-    fabcar.tar.gz \
+    ${CC_NAME}.tar.gz \
     --path "${CC_SRC_PATH}" \
     --lang "${CC_RUNTIME_LANGUAGE}" \
-    --label fabcarv1
+    --label ${CC_NAME}v1
   checkResult
   echo
 
@@ -165,16 +163,16 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "####### INSTALLING CHAINCODE ON peer0.org1.example.com #######"
   echo "##############################################################"
   ${PEER0_ORG1} lifecycle chaincode install \
-    fabcar.tar.gz
+    ${CC_NAME}.tar.gz
   checkResult
   echo
 
-  REGEX='Package ID: (.*), Label: fabcarv1'
+  REGEX="Package ID: (.*), Label: ${CC_NAME}v1"
   if [[ `${PEER0_ORG1} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
     PACKAGE_ID_ORG1=${BASH_REMATCH[1]}
     echo $PACKAGE_ID_ORG1
   else
-    echo Could not find package ID for fabcarv1 chaincode on peer0.org1.example.com
+    echo Could not find package ID for ${CC_NAME}v1 chaincode on peer0.org1.example.com
     exit 1
   fi
 
@@ -186,7 +184,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   ${PEER0_ORG1} lifecycle chaincode approveformyorg \
     --package-id ${PACKAGE_ID_ORG1} \
     --channelID mychannel \
-    --name fabcar \
+    --name ${CC_NAME} \
     --version 1.0 \
     --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
     --sequence 1 \
@@ -200,10 +198,10 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "####### PACKAGING CHAINCODE ON peer0.org2.example.com ########"
   echo "##############################################################"
   ${PEER0_ORG2} lifecycle chaincode package \
-    fabcar.tar.gz \
+    ${CC_NAME}.tar.gz \
     --path "$CC_SRC_PATH" \
     --lang "$CC_RUNTIME_LANGUAGE" \
-    --label fabcarv1
+    --label ${CC_NAME}v1
   checkResult
   echo
 
@@ -212,16 +210,16 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "##############################################################"
   echo "####### INSTALLING CHAINCODE ON peer0.org2.example.com #######"
   echo "##############################################################"
-  ${PEER0_ORG2} lifecycle chaincode install fabcar.tar.gz
+  ${PEER0_ORG2} lifecycle chaincode install ${CC_NAME}.tar.gz
   checkResult
   echo
 
-  REGEX='Package ID: (.*), Label: fabcarv1'
+  REGEX="Package ID: (.*), Label: ${CC_NAME}v1"
   if [[ `${PEER0_ORG2} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
     PACKAGE_ID_ORG2=${BASH_REMATCH[1]}
     echo $PACKAGE_ID_ORG2
   else
-    echo Could not find package ID for fabcarv1 chaincode on peer0.org2.example.com
+    echo Could not find package ID for ${CC_NAME}v1 chaincode on peer0.org2.example.com
     exit 1
   fi
 
@@ -233,7 +231,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   ${PEER0_ORG2} lifecycle chaincode approveformyorg \
     --package-id ${PACKAGE_ID_ORG2} \
     --channelID mychannel \
-    --name fabcar \
+    --name ${CC_NAME} \
     --version 1.0 \
     --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
     --sequence 1 \
@@ -248,7 +246,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "################################################"
   ${PEER0_ORG1} lifecycle chaincode commit \
     --channelID mychannel \
-    --name fabcar \
+    --name ${CC_NAME} \
     --version 1.0 \
     --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
     --sequence 1 \
@@ -267,7 +265,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "######################################################"
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
-    -n fabcar \
+    -n ${CC_NAME} \
     -c '{"function":"initLedger","Args":[]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
@@ -285,8 +283,8 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   echo "###################################"
   ${PEER0_ORG1} chaincode query \
     -C mychannel \
-    -n fabcar \
-    -c '{"function":"queryAllCars","Args":[]}' \
+    -n ${CC_NAME} \
+    -c '{"function":"getTotalRequests","Args":[]}' \
     --peerAddresses peer0.org1.example.com:7051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
   checkResult

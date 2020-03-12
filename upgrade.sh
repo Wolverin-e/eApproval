@@ -36,14 +36,6 @@ function printhelp(){
   exit 0
 }
 
-#  CC_NAME, CC_LABLE, CC_VERSION, CC_SEQUENCE, CC_RUNTIME, CC_SRC_PATH
-export CC_NAME=fabcar
-export CC_LABLE=fabcarv2
-export CC_VERSION=2.0
-export CC_SEQUENCE=2
-export CC_RUNTIME_LANGUAGE=golang
-export CC_SRC_PATH=/root/chaincode/fabcar2/go
-
 while getopts "h?n:l:v:s:p:" opt; do
   case "$opt" in
   h | \?)
@@ -246,7 +238,7 @@ echo "###################################"
 ${PEER0_ORG1} chaincode query \
 -C mychannel \
 -n ${CC_NAME} \
--c '{"function":"queryAllCars","Args":[]}' \
+-c '{"function":"getTotalRequests","Args":[]}' \
 --peerAddresses peer0.org1.example.com:7051 \
 --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
 checkResult

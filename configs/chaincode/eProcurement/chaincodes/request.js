@@ -35,7 +35,7 @@ class Request {
     }
 
     toBuffer(){
-        return Buffer.from(this.toJson);
+        return Buffer.from(this.toJson());
     }
 
     constructApprovals() {
@@ -48,7 +48,7 @@ class Request {
     }
 
     getOverallStatus() {
-        status = ""
+        let status = ""
         for (let key in this.approvals){
             let ind_status = this.approvals[key].status;
             switch(ind_status){

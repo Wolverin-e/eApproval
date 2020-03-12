@@ -1,11 +1,13 @@
+# FOLDERS
 bin
 */*.DS_Store
+
+# CRYPTO MATERIAL
 configs/channel-artifacts
 configs/crypto-config
 
 # GO
 vendor/
-# chaincode/
 
-# node-modules
+# NODE MODULES
 node_modules/

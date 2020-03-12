@@ -14,30 +14,30 @@ class eProcurement extends Contract {
         await ctx.stub.putState("totalRequests", Buffer.from(JSON.stringify(0)));
     }
 
-    async getTotalRequests(stub) {
-        let count = await stub.getState("totalRequests");
+    async getTotalRequests(ctx) {
+        let count = await ctx.stub.getState("totalRequests");
         return JSON.parse(count);
     }
 
-    async incrementTotalRequests(stub) {
-        let count = await this.getTotalRequests(stub);
+    async incrementTotalRequests(ctx) {
+        let count = await this.getTotalRequests(ctx);
         ++count;
-        await stub.putState("totalRequests", Buffer.from(JSON.stringify(count)));
+        await ctx.stub.putState("totalRequests", Buffer.from(JSON.stringify(count)));
         return count;
     }
 
     async createRequest(ctx, from_user, title, description, requestedDepartments){
         const req = new Request();
-
+        
         req.from_user = from_user;
         req.title = title;
         req.description = description;
-        req.requestedDepartments = JSON.parse(requestedDepartments);
+        req.requestedDepartments = requestedDepartments.split(' ');
         req.constructApprovals();
         req.updateOverallStatus();
-
-        let count = await this.incrementTotalRequests(ctx.stub);
-        key = await ctx.stub.createCompositeKey('PENDING', ['Request', `${count}`]);
+        
+        let count = await this.incrementTotalRequests(ctx);
+        let key = await ctx.stub.createCompositeKey('PENDING', ['Request', `${count}`]);
         await ctx.stub.putState(key, req.toBuffer());
     }
 
@@ -57,3 +57,7 @@ class eProcurement extends Contract {
 }
 
 module.exports = eProcurement;
+
+
+// test
+// peer chaincode query -n eprocurement -C mychannel -c '{"function": "createRequest", "Args": ["alpha", "coal-mine", "coal-mine in INDIA", "[\"a1\", \"b1\"]"]}'
