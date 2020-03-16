@@ -44,17 +44,11 @@ echo
 echo "######################################################"
 echo "####### INVOKING INIT IN CHAINCODE DEFINITION ########"
 echo "######################################################"
-# -c '{"function": "declineRequest", "Args": ["PENDING Request 2", "gc", "Good initiative"]}' \
-# -c '{"function": "createRequest", "Args": ["m1", "gamms", "details", "org1"]}' \
-${PEER0_ORG1} chaincode invoke \
+# -c '{"function": "getTotalRequests", "Args": []}' \
+# -c '{"function": "getValueForKey", "Args": ["PENDING Request 3"]}' \
+${PEER0_ORG1} chaincode query \
 -C mychannel \
+-c '{"function": "getValuesForPartialKey", "Args": ["DECLINED Request"]}' \
 -n ${CC_NAME} \
--c '{"function": "approveRequest", "Args": ["PENDING Request 1", "org1", "Good initiative"]}' \
---waitForEvent \
---waitForEventTimeout 300s \
---peerAddresses peer0.org1.example.com:7051 \
---peerAddresses peer0.org2.example.com:9051 \
---tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
---tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
 checkResult
 echo
