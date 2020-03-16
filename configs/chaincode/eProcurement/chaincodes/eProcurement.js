@@ -98,6 +98,18 @@ class eProcurement extends Contract {
         }
         return JSON.stringify(results);
     }
+
+    // async returnMe(ctx, custom){
+    //     var vals = {}
+    //     vals['id'] = await ctx.clientIdentity.getID();
+    //     vals['mspid'] = await ctx.clientIdentity.getMSPID();
+    //     vals['role'] = await ctx.clientIdentity.getAttributeValue('role');
+    //     vals['enrollmentID'] = await ctx.clientIdentity.getAttributeValue('enrollmentID');
+    //     vals['affiliation'] = await ctx.clientIdentity.getAttributeValue('affiliation');
+    //     vals['custom'] = await ctx.clientIdentity.getAttributeValue(custom);
+    //     // vals['X.509'] = await ctx.clientIdentity.getX509Certificate();
+    //     return JSON.stringify(vals);
+    // }
 }
 
 module.exports = eProcurement;
