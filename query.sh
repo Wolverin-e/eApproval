@@ -42,7 +42,7 @@ peer
 
 echo
 echo "######################################################"
-echo "####### INVOKING INIT IN CHAINCODE DEFINITION ########"
+echo "################ QUERYING CHAINCODE ##################"
 echo "######################################################"
 # -c '{"function": "getTotalRequests", "Args": []}' \
 # -c '{"function": "getValueForKey", "Args": ["PENDING Request 3"]}' \
