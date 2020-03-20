@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/env-cmd -r .env.rc.json -e api-dev,test node_modules/.bin/nodemon app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "env-cmd": "^10.1.0",
     "express": "^4.17.1",
-    "fabric-ca-client": "^1.4.8",
-    "fabric-network": "^1.4.8",
+    "fabric-ca-client": "beta",
+    "fabric-network": "beta",
     "nodemon": "^2.0.2"
   }
 }

@@ -1,6 +1,10 @@
 # FOLDERS
 bin
 */*.DS_Store
+sandbox
+
+# CCPs GENERATED
+connection-org*.json
 
 # CRYPTO MATERIAL
 configs/channel-artifacts

@@ -11,13 +11,15 @@ function printHelp(){
 
     echo
     echo "Usage: "
-    echo "  startNet.sh <mode>"
+    echo "  startNet.sh <mode> [-h] [-n]"
     echo "      <mode> - one of the 'up', 'down', 'restart', 'generate', 'clear'"
     echo "        - 'up' - Bring Up The Network"
     echo "        - 'down' - Tear Down The Services"
     echo "        - 'clear' - Clear the Crypto Material"
     echo "        - 'restart' - Restart The Network"
     echo "        - 'generate' - Generate Crypto-Config & Channel-Artifacts"
+    echo "      -n - Don't start CA Nodes"
+    echo "      -h - Get Help"
     echo
 }
 
@@ -122,6 +124,20 @@ function generateChannelArtifacts(){
     echo
 }
 
+# FUNCTION TO GENERATE NETWORK CCP
+function generateCCP(){
+
+    echo
+    echo "##########################################################"
+    echo "##### Generate certificates using cryptogen tool #########"
+    echo "##########################################################"
+    set -x
+    ./genccp.sh
+    checkResult
+
+    echo
+}
+
 # FUNCTION TO CLEAR PREVIOUSLY GENERATED CERTS AND ARTIFACTS
 function clearThings(){
 
@@ -140,7 +156,6 @@ function clearThings(){
     set -x
     ./clearFolders.sh
     checkResult
-    set +x
 }
 
 # FUNCTION TO START THE CONTAINERS
@@ -152,8 +167,7 @@ function networkUp(){
     echo "#######################################"
 
     docker-compose \
-    -f configs/docker-compose-cli.yaml \
-    -f configs/docker-compose-couch.yaml \
+    ${DOCKER_COMPOSE_FILES} \
     up -d
 
     checkResult
@@ -176,8 +190,7 @@ function networkDown(){
     echo "#######################################"
 
     docker-compose \
-    -f configs/docker-compose-cli.yaml \
-    -f configs/docker-compose-couch.yaml \
+    ${DOCKER_COMPOSE_FILES} \
     down --volumes --remove-orphans
 
     echo
@@ -226,15 +239,43 @@ function networkDown(){
 
 ###################################################
 
+# DECLARING NECESSARY VARS
+DOCKER_COMPOSE_CLI=configs/docker-compose-cli.yaml
+DOCKER_COMPOSE_DB=configs/docker-compose-couch.yaml
+DOCKER_COMPOSE_CA=configs/docker-compose-ca.yaml
+DOCKER_COMPOSE_FILES="-f ${DOCKER_COMPOSE_CLI} -f ${DOCKER_COMPOSE_DB}"
+
+
 # GETTING THE ARGUMENT PASSED WITH THE COMMAND
 MODE=$1
 shift
+
+# GETTING OPTS
+while getopts "nh" opt; do
+  case "$opt" in
+  h | \?)
+    printHelp
+    exit 0
+    ;;
+  n)
+    NO_CA=true
+    ;;
+  esac
+done
+
+# FOR NO CA SUPPORT
+if [ "${NO_CA}" != "true" ]; then
+    DOCKER_COMPOSE_FILES="${DOCKER_COMPOSE_FILES} -f ${DOCKER_COMPOSE_CA}"
+    export eProcurement_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
+    export eProcurement_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+fi
 
 # WORKING ACCORDING TO THE ARGUMENT
 if [ "${MODE}" == "up" ]; then
     clearThings
     generateCerts
     generateChannelArtifacts
+    generateCCP
     networkUp
 elif [ "${MODE}" == "down" ]; then
     networkDown
@@ -244,11 +285,13 @@ elif [ "${MODE}" == "restart" ]; then
     clearThings
     generateCerts
     generateChannelArtifacts
+    generateCCP
     networkUp
 elif [ "${MODE}" == "generate" ]; then
     clearThings
     generateCerts
     generateChannelArtifacts
+    generateCCP
 elif [ "${MODE}" == "clear" ]; then
     clearThings
 else
