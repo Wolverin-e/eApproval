@@ -3,6 +3,9 @@ bin
 */*.DS_Store
 sandbox
 
+# Wallet
+wallet
+
 # CCPs GENERATED
 connection-org*.json
 

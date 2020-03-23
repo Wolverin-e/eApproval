@@ -161,6 +161,14 @@ function clearThings(){
 # FUNCTION TO START THE CONTAINERS
 function networkUp(){
 
+    if [ "${NO_CA}" != "true" ]; then
+        DOCKER_COMPOSE_FILES="${DOCKER_COMPOSE_FILES} -f ${DOCKER_COMPOSE_CA}"
+        export EPROCUREMENT_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
+        # echo ${EPROCUREMENT_CA1_PRIVATE_KEY}
+        export EPROCUREMENT_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+        # echo ${EPROCUREMENT_CA2_PRIVATE_KEY}
+    fi
+
     echo
     echo "#######################################"
     echo "####### Starting The Network  #########"
@@ -184,6 +192,10 @@ function networkUp(){
 # FUNCTION TO STOP AND REMOVE THE CONTAINERS
 function networkDown(){
 
+    export EPROCUREMENT_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
+    export EPROCUREMENT_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+    DOCKER_COMPOSE_FILES="${DOCKER_COMPOSE_FILES} -f ${DOCKER_COMPOSE_CA}"
+    
     echo
     echo "#######################################"
     echo "####### Stopping The Network  #########"
@@ -262,13 +274,6 @@ while getopts "nh" opt; do
     ;;
   esac
 done
-
-# FOR NO CA SUPPORT
-if [ "${NO_CA}" != "true" ]; then
-    DOCKER_COMPOSE_FILES="${DOCKER_COMPOSE_FILES} -f ${DOCKER_COMPOSE_CA}"
-    export eProcurement_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-    export eProcurement_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
-fi
 
 # WORKING ACCORDING TO THE ARGUMENT
 if [ "${MODE}" == "up" ]; then
