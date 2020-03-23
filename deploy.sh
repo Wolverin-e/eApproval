@@ -8,11 +8,12 @@ function printhelp(){
   
   echo 
   echo "Usage:"
-  echo "  deploy.sh [-a] [-h] [-n] [-i] [-c]"
+  echo "  deploy.sh [-a] [-h] [-n] [-i] [-c] [-p]"
   echo "  -a - DO INITIAL SETUP AND INSTALL CHAINCODE"
   echo "  -n - NO CHAINCODE INSTALLATION"
   echo "  -c - CHAINCODE ONLY"
   echo "  -i - IGNORE ERRORS"
+  echo "  -p - POPULATE DB"
   echo "  -h - HELP"
   echo
 }
@@ -38,7 +39,15 @@ if [ "${1}" == "" ]; then
   exit 1
 fi
 
-while getopts "h?ncai" opt; do
+
+# DEFAULT OPTS
+CHAIN_CODE_ONLY=true
+NO_CHAINCODE=true
+IGNORE_ERRORS=false
+POPULATE_DB=true
+
+
+while getopts "h?ncaip" opt; do
   case "$opt" in
   h | \?)
     printhelp
@@ -57,6 +66,10 @@ while getopts "h?ncai" opt; do
     ;;
   i)
     IGNORE_ERRORS=true
+    ;;
+  p)
+    POPULATE_DB=true
+    ;;
   esac
 done
 
@@ -290,4 +303,115 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
   checkResult
   echo
 
+fi
+
+if [ "${POPULATE_DB}" == "true" ]; then
+  echo
+  echo "#############################################################"
+  echo "####### INVOKING POPULATE_DB IN CHAINCODE DEFINITION ########"
+  echo "#############################################################"
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"createRequest","Args":["Alpha", "Cell Phone Tower", "Tower Outside of Town.", "ORG1 ORG2"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"createRequest","Args":["Beta", "Chemical Factory", "Chemical Factory Inside Town.", "ORG1 ORG2"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"createRequest","Args":["Gamma", "Ice-cream Factory", "Ice-cream Factory inside Town.", "ORG1 ORG2"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"createRequest","Args":["Delta", "Coal mine", "Coal mine inside Town.", "ORG1 ORG2"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG1", "Good!"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG2", "Good!"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+  ${PEER0_ORG1} chaincode invoke \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"declineRequest","Args":["PENDING Request 2", "ORG1", "Harmful!!"]}' \
+    --waitForEvent \
+    --waitForEventTimeout 300s \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org2.example.com:9051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
+    --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
+
+
+  echo
+  echo "###################################"
+  echo "####### QUERYING CHAINCODE ########"
+  echo "###################################"
+  ${PEER0_ORG1} chaincode query \
+    -C mychannel \
+    -n ${CC_NAME} \
+    -c '{"function":"getTotalRequests","Args":[]}' \
+    --peerAddresses peer0.org1.example.com:7051 \
+    --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
+  checkResult
+  echo
 fi
