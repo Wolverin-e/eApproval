@@ -1,7 +1,12 @@
-const app = require('express')();
+const express = require('express');
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 const getCCP = require('./ccp');
+
+
+/////////////////////////// API
+const app = express();
+app.use(express.json());
 
 /////////////////////////// TEST FUNCTIONALITIES
 
@@ -73,19 +78,51 @@ app.get("/api/pendingRequests", async (req, res) => {
     res.send(pending_requests.toString());
 })
 
-app.get("/api/approvedRequests", (req, res) => {
+app.get("/api/approvedRequests", async (req, res) => {
+    const approved_requests = await contract_query('getValuesForPartialKey', 'APPROVED Request');
+    res.send(approved_requests.toString());
 })
 
-app.get("/api/declinedRequests", (req, res) => {
+app.get("/api/declinedRequests", async (req, res) => {
+    const declined_requests = await contract_query('getValuesForPartialKey', 'DECLINED Request');
+    res.send(declined_requests.toString());
 })
 
-app.post("/api/approve", (req, res) => {
+app.post("/api/createRequest", async (req, res) => {
+    const from_user = req.body.from_user;
+    const title = req.body.title;
+    const descriptions = req.body.descriptions;
+    const requestedDepartments = req.body.requestedDepartments;
+    await contract_invoke('createRequest', from_user, title, descriptions, requestedDepartments);
+    res.send("SUCCESS!");
 })
 
-app.post("/api/decline", (req, res) => {
+app.post("/api/approve", async (req, res) => {
+    const req_key = req.body.req_key;
+    const department = req.body.department;
+    const remarks = req.body.remarks;
+    await contract_invoke('approveRequest', req_key, department, remarks);
+    res.send("SUCCESS!");
 })
 
-app.post("/api/query", (req, res) => {
+app.post("/api/decline", async (req, res) => {
+    const req_key = req.body.req_key;
+    const department = req.body.department;
+    const remarks = req.body.remarks;
+    await contract_invoke('declineRequest', req_key, department, remarks);
+    res.send("SUCCESS!");
+})
+
+app.post("/api/query", async (req, res) => {
+    const qry = req.body.qry;
+    const result = await contract_query(...qry);
+    res.send(result);
+})
+
+app.get("/api/invoke", async (req, res) => {
+    const invoke_query = req.body.invoke_query;
+    const result = await contract_invoke(...invoke_query);
+    res.send("SUBMITTED!: "+result);
 })
 
 app.post("/api/login", (req, res) => {
@@ -94,11 +131,6 @@ app.post("/api/login", (req, res) => {
     } else {
 
     }
-})
-
-app.get("/api/invoke", async (req, res) => {
-    const result = await contract_invoke('incrementTotalRequests');
-    res.send("SUBMITTED!: "+result);
 })
 
 ////////////////////////// DEFAULT
