@@ -1,13 +1,6 @@
-/*
- * SPDX-License-Identifier: Apache-2.0
- */
-
-'use strict';
-
 const { Wallets } = require('fabric-network');
 const FabricCAServices = require('fabric-ca-client');
 const getCCP = require('./ccp');
-const fs = require('fs');
 const path = require('path');
 
 async function main() {
