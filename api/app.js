@@ -17,17 +17,21 @@ if(!process.env.test){
 
 // TEST to check if API is Working or not
 app.get("/test", (req, res) => {
-    res.send("Working");
+    res.send({
+        success: true
+    });
 })
 
 
 ////////////////////////// CONFS
+const ccp = getCCP('org1');
+const walletPath = path.join(process.cwd(), 'wallet');
+const wallet;
+Wallets.newFileSystemWallet(walletPath).then(wlt => {
+    wallet = wlt;
+})
 
 const contract_query = async (...query) => {
-    const ccp = getCCP('org1');
-    const walletPath = path.join(process.cwd(), 'wallet');
-    const wallet = await Wallets.newFileSystemWallet(walletPath);
-    
     const gateway = new Gateway();
     await gateway.connect(ccp, {
         wallet: wallet, 
@@ -37,21 +41,14 @@ const contract_query = async (...query) => {
             asLocalhost: true
         }
     });
-
     const network = await gateway.getNetwork('mychannel');
-
     const contract = network.getContract('eprocurement');
-
     const result  = await contract.evaluateTransaction(...query);
 
     return result;
 }
 
 const contract_invoke = async (...query) => {
-    const ccp = getCCP('org1');
-    const walletPath = path.join(process.cwd(), 'wallet');
-    const wallet = await Wallets.newFileSystemWallet(walletPath);
-    
     const gateway = new Gateway();
     await gateway.connect(ccp, {
         wallet: wallet, 
@@ -61,11 +58,8 @@ const contract_invoke = async (...query) => {
             asLocalhost: true
         }
     });
-
     const network = await gateway.getNetwork('mychannel');
-
     const contract = network.getContract('eprocurement');
-
     const result  = await contract.submitTransaction(...query);
 
     return result;
@@ -75,17 +69,26 @@ const contract_invoke = async (...query) => {
 ////////////////////////// API FUNCTIONALITIES
 app.get("/api/pendingRequests", async (req, res) => {
     const pending_requests = await contract_query('getValuesForPartialKey', 'PENDING Request');
-    res.send(pending_requests.toString());
+    res.send({
+        success: true, 
+        response: pending_requests.toString()
+    });
 })
 
 app.get("/api/approvedRequests", async (req, res) => {
     const approved_requests = await contract_query('getValuesForPartialKey', 'APPROVED Request');
-    res.send(approved_requests.toString());
+    res.send({
+        success: true, 
+        response: approved_requests.toString()
+    });
 })
 
 app.get("/api/declinedRequests", async (req, res) => {
     const declined_requests = await contract_query('getValuesForPartialKey', 'DECLINED Request');
-    res.send(declined_requests.toString());
+    res.send({
+        success: true, 
+        response: declined_requests.toString()
+    });
 })
 
 app.post("/api/createRequest", async (req, res) => {
@@ -94,7 +97,9 @@ app.post("/api/createRequest", async (req, res) => {
     const descriptions = req.body.descriptions;
     const requestedDepartments = req.body.requestedDepartments;
     await contract_invoke('createRequest', from_user, title, descriptions, requestedDepartments);
-    res.send("SUCCESS!");
+    res.send({
+        success: true
+    });
 })
 
 app.post("/api/approve", async (req, res) => {
@@ -102,7 +107,9 @@ app.post("/api/approve", async (req, res) => {
     const department = req.body.department;
     const remarks = req.body.remarks;
     await contract_invoke('approveRequest', req_key, department, remarks);
-    res.send("SUCCESS!");
+    res.send({
+        success: true
+    });
 })
 
 app.post("/api/decline", async (req, res) => {
@@ -110,33 +117,42 @@ app.post("/api/decline", async (req, res) => {
     const department = req.body.department;
     const remarks = req.body.remarks;
     await contract_invoke('declineRequest', req_key, department, remarks);
-    res.send("SUCCESS!");
+    res.send({
+        success: true
+    });
 })
 
 app.post("/api/query", async (req, res) => {
     const qry = req.body.qry;
     const result = await contract_query(...qry);
-    res.send(result);
+    res.send({
+        success: true, 
+        result
+    });
 })
 
 app.get("/api/invoke", async (req, res) => {
     const invoke_query = req.body.invoke_query;
     const result = await contract_invoke(...invoke_query);
-    res.send("SUBMITTED!: "+result);
+    res.send({
+        success: true, 
+        result
+    });
 })
 
 app.post("/api/login", (req, res) => {
     if(process.env.dev){
-
     } else {
-
     }
 })
 
 ////////////////////////// DEFAULT
 app.use((req, res, next) => {
-    res.status(406)
-        .send("ENDPOINT DOESN'T EXIST!");
+    res.status(406).send({
+        success: false, 
+        path: req.path, 
+        err: "Endpoint Doesn't exist!"
+    });
 })
 
 ////////////////////////// PORT, HTTP
