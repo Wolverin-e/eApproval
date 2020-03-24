@@ -97,7 +97,7 @@ Orderer: &OrdererDefaults
     OrdererType: etcdraft
     Addresses:
         - orderer.example.com:7050
-    BatchTimeout: 2s
+    BatchTimeout: 50ms # NOT FOR PRODUCTION.
     BatchSize:
         MaxMessageCount: 10
         AbsoluteMaxBytes: 99 MB
