@@ -26,7 +26,7 @@ app.get("/test", (req, res) => {
 ////////////////////////// CONFS
 const ccp = getCCP('org1');
 const walletPath = path.join(process.cwd(), 'wallet');
-const wallet;
+var wallet;
 Wallets.newFileSystemWallet(walletPath).then(wlt => {
     wallet = wlt;
 })
