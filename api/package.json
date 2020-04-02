@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "simulation": "node simulate.js", 
     "start": "node_modules/.bin/env-cmd -r .env.rc.json -e api-dev,test node_modules/.bin/nodemon app.js"
   },
   "author": "",
