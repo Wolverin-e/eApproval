@@ -1,5 +1,6 @@
 FROM node:10.19.0-slim
-COPY ./ /api
 WORKDIR /api
+COPY ./ /api
+RUN npm i
 EXPOSE 8000
-CMD npm run ${MODE}
+CMD ./entrypoint.sh

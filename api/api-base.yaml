@@ -4,8 +4,6 @@ services:
   api-base:
     image: eprocurement/api:1.0
     environment:
-      - MODE=simulation
+      - MODE=production
     volumes:
-      - ./node_modules:/api/node_modules
-    networks:
-      - eProcurement
+      - ../configs/ccp:/configs/ccp

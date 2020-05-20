@@ -26,7 +26,7 @@ app.get("/test", (req, res) => {
 
 
 ////////////////////////// CONFS
-const ccp = getCCP('org1');
+const ccp = getCCP(process.env.ORG);
 const walletPath = path.join(process.cwd(), 'wallet');
 var wallet;
 Wallets.newFileSystemWallet(walletPath).then(wlt => {
@@ -37,7 +37,7 @@ const contract_query = async (...query) => {
     const gateway = new Gateway();
     await gateway.connect(ccp, {
         wallet: wallet, 
-        identity: 'user1', 
+        identity: process.env.USR, 
         discovery: {
             enabled: true, 
             asLocalhost: true
@@ -54,7 +54,7 @@ const contract_invoke = async (...query) => {
     const gateway = new Gateway();
     await gateway.connect(ccp, {
         wallet: wallet, 
-        identity: 'user1', 
+        identity: process.env.USR, 
         discovery: {
             enabled: true, 
             asLocalhost: true

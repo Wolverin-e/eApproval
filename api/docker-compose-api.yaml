@@ -11,6 +11,12 @@ services:
       service: api-base
     ports:
       - 8000:8000
+    networks:
+      - eProcurement
+    extra_hosts:
+      - "localhost:192.168.43.239"
+    volumes:
+      - ./ORG1.env.rc.json:/api/.env.rc.json
 
   api2:
     extends:
@@ -18,3 +24,9 @@ services:
       service: api-base
     ports:
       - 8001:8000
+    networks:
+      - eProcurement
+    extra_hosts:
+      - "localhost:192.168.43.239"
+    volumes:
+      - ./ORG2.env.rc.json:/api/.env.rc.json

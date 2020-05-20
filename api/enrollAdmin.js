@@ -7,10 +7,10 @@ const path = require('path');
 async function main() {
     try {
         // load the network configuration
-        const ccp = getCCP('org1');
+        const ccp = getCCP(process.env.ORG);
 
         // Create a new CA client for interacting with the CA.
-        const caInfo = ccp.certificateAuthorities['ca.org1.example.com'];
+        const caInfo = ccp.certificateAuthorities['ca.'+process.env.ORG+'.example.com'];
         const caTLSCACerts = caInfo.tlsCACerts.pem;
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
@@ -33,7 +33,7 @@ async function main() {
                 certificate: enrollment.certificate,
                 privateKey: enrollment.key.toBytes(),
             },
-            mspId: 'Org1MSP',
+            mspId: process.env.MSP,
             type: 'X.509',
         };
         await wallet.put('admin', x509Identity);

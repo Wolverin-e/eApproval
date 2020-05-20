@@ -6,10 +6,10 @@ const path = require('path');
 async function main() {
     try {
         // load the network configuration
-        const ccp = getCCP('org1');
+        const ccp = getCCP(process.env.ORG);
 
         // Create a new CA client for interacting with the CA.
-        const caURL = ccp.certificateAuthorities['ca.org1.example.com'].url;
+        const caURL = ccp.certificateAuthorities['ca.'+process.env.ORG+'.example.com'].url;
         const ca = new FabricCAServices(caURL);
 
         // Create a new file system based wallet for managing identities.
@@ -18,7 +18,7 @@ async function main() {
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get('user1');
+        const userIdentity = await wallet.get(process.env.USR);
         if (userIdentity) {
             console.log('An identity for the user "user1" already exists in the wallet');
             return;
@@ -38,12 +38,12 @@ async function main() {
 
         // Register the user, enroll the user, and import the new identity into the wallet.
         const secret = await ca.register({
-            affiliation: 'org1.department1',
-            enrollmentID: 'user1',
+            affiliation: process.env.ORG+'.department1',
+            enrollmentID: process.env.USR,
             role: 'client'
         }, adminUser);
         const enrollment = await ca.enroll({
-            enrollmentID: 'user1',
+            enrollmentID: process.env.USR,
             enrollmentSecret: secret
         });
         const x509Identity = {
@@ -51,10 +51,10 @@ async function main() {
                 certificate: enrollment.certificate,
                 privateKey: enrollment.key.toBytes(),
             },
-            mspId: 'Org1MSP',
+            mspId: process.env.MSP,
             type: 'X.509',
         };
-        await wallet.put('user1', x509Identity);
+        await wallet.put(process.env.USR, x509Identity);
         console.log('Successfully registered and enrolled admin user "user1" and imported it into the wallet');
 
     } catch (error) {
