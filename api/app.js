@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require("cors");
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 const getCCP = require('./ccp');
@@ -7,6 +8,7 @@ const getCCP = require('./ccp');
 /////////////////////////// API
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 /////////////////////////// TEST FUNCTIONALITIES
 
