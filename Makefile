@@ -1,3 +1,7 @@
+HOST_IP := $(shell ipconfig getifaddr en0)
+export HOST_IP
+
+
 default:
 	make start
 	make build-images

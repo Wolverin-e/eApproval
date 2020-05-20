@@ -14,7 +14,7 @@ services:
     networks:
       - eProcurement
     extra_hosts:
-      - "localhost:192.168.43.239"
+      - "localhost:${HOST_IP}"
     volumes:
       - ./ORG1.env.rc.json:/api/.env.rc.json
 
@@ -27,6 +27,6 @@ services:
     networks:
       - eProcurement
     extra_hosts:
-      - "localhost:192.168.43.239"
+      - "localhost:${HOST_IP}"
     volumes:
       - ./ORG2.env.rc.json:/api/.env.rc.json
