@@ -18,3 +18,4 @@ vendor/
 
 # NODE MODULES
 node_modules/
+ui/client/src/compass/
