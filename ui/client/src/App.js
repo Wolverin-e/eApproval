@@ -1,7 +1,9 @@
 import React from 'react';
+// import './App.scss';
 import './App.css';
 import PendingRequest from './components/pendingRequests';
-
+import ApprovedRequest from './components/approvedRequest';
+import DeclinedRequest from './components/declinedRequest';
 
 // function App() {
 //   return (
@@ -29,26 +31,15 @@ class App extends React.Component {
   state = {
     data: []
   }
-  
-  // componentDidMount() {
-  //   fetch('http://127.0.0.1:8000/api/pendingRequests')
-  //   .then(res => res.json())
-  //   .then( (res) => { res = res.response
-  //                     var a = JSON.parse(res)
-  //                     // a.Val = JSON.parse(a.Val)
-  //                     // console.log(a)
-  //                     return a} 
-  //                     )
-  //   .then((a) => {
-  //     this.setState({data:a})
-  //     console.log(a)
-  //   })
-  //   .catch(console.log)
-  // }
 
   render() {
-    // return <PendingRequest data = {this.state.data}></PendingRequest>
-    return <PendingRequest></PendingRequest>
+    return (
+    <div>
+      <ApprovedRequest></ApprovedRequest>
+      <PendingRequest></PendingRequest>
+      <DeclinedRequest></DeclinedRequest>
+    </div>
+    )
   }
 }
 

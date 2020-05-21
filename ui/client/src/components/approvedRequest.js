@@ -1,13 +1,13 @@
 import React from 'react'
 
 
-class PendingRequest extends React.Component {
+class ApprovedRequest extends React.Component {
   state = {
     data: []
   }
 
   componentDidMount() {
-    fetch('http://127.0.0.1:8000/api/pendingRequests')
+    fetch('http://127.0.0.1:8000/api/approvedRequests')
     .then(res => res.json())
     .then( (res) => {
       res = res.response
@@ -16,7 +16,7 @@ class PendingRequest extends React.Component {
         let temp = JSON.parse(arg.Val)
         return {Key: arg.Key, Val: temp}
       } )
-      // console.log(a)
+      console.log(a)
       return a
     }
     )
@@ -29,7 +29,7 @@ class PendingRequest extends React.Component {
   render() {
     return (
       <div>
-        <h2>Pending Request</h2>
+        <h2>Approved Request</h2>
         <table class="rwd-table">
           <tr>
             <th>Title</th>
@@ -38,7 +38,7 @@ class PendingRequest extends React.Component {
             <th>ORG2</th>
             <th>Request By</th>
           </tr>
-          {this.state.data.map(arg => <PendingRequestObj Val = {arg.Val}/>)}
+          {this.state.data.map(arg => <ApprovedRequestObj Val = {arg.Val}/>)}
     </table>
     </div>
     )
@@ -46,7 +46,7 @@ class PendingRequest extends React.Component {
 }
 
 
-const PendingRequestObj = (props) => {
+const ApprovedRequestObj = (props) => {
   return (
   <React.Fragment>
     <tr>
@@ -60,4 +60,4 @@ const PendingRequestObj = (props) => {
   )
 }
 
-export default PendingRequest
+export default ApprovedRequest
