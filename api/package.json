@@ -16,6 +16,8 @@
     "express": "^4.17.1",
     "fabric-ca-client": "beta",
     "fabric-network": "beta",
-    "nodemon": "^2.0.2"
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.2",
+    "sqlite3": "^4.2.0"
   }
 }

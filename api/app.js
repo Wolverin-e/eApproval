@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require("cors");
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
+const jwt = require('jsonwebtoken');
 const getCCP = require('./ccp');
 
 
@@ -9,6 +11,11 @@ const getCCP = require('./ccp');
 const app = express();
 app.use(express.json());
 app.use(cors())
+
+/////////////////////////// DB
+let db = new sqlite3.Database('./users.db', sqlite3.OPEN_READWRITE, (err) => {
+    if(err) console.error(err);
+})
 
 /////////////////////////// TEST FUNCTIONALITIES
 
@@ -33,11 +40,11 @@ Wallets.newFileSystemWallet(walletPath).then(wlt => {
     wallet = wlt;
 })
 
-const contract_query = async (...query) => {
+const contract_query = async (user, ...query) => {
     const gateway = new Gateway();
     await gateway.connect(ccp, {
         wallet: wallet, 
-        identity: process.env.USR, 
+        identity: user, 
         discovery: {
             enabled: true, 
             asLocalhost: true
@@ -50,11 +57,11 @@ const contract_query = async (...query) => {
     return result;
 }
 
-const contract_invoke = async (...query) => {
+const contract_invoke = async (user, ...query) => {
     const gateway = new Gateway();
     await gateway.connect(ccp, {
         wallet: wallet, 
-        identity: process.env.USR, 
+        identity: user, 
         discovery: {
             enabled: true, 
             asLocalhost: true
@@ -69,8 +76,40 @@ const contract_invoke = async (...query) => {
 
 
 ////////////////////////// API FUNCTIONALITIES
+const exceptions = ['/api/login', '/api/register'];
+const secret_key = process.env.secret_key;
+
+const get_tkn = user_profile => {
+    return jwt.sign(user_profile, secret_key, {algorithm: "HS512"});
+}
+
+const verify_tkn = (req, res, next) => {
+    jwt.verify(req.headers.tkn, secret_key, (err, decrypted_profile) => {
+        if(!err){
+            req.headers.user_profile = decrypted_profile;
+            req.headers.user = decrypted_profile.UserName;
+            next();
+        } else {
+            res.status(401).send("JWT Verification Failed!");
+        }
+    })
+}
+
+app.use((req, res, next) => {
+    if(!(process.env.auth_disabled === "true")){
+        if(exceptions.includes(req.path)){
+            next();
+        } else {
+            verify_tkn(req, res, next);
+        }
+    } else {
+        req.headers.user = process.env.USR;
+        next();
+    }
+})
+
 app.get("/api/pendingRequests", async (req, res) => {
-    const pending_requests = await contract_query('getValuesForPartialKey', 'PENDING Request');
+    const pending_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', 'PENDING Request');
     res.send({
         success: true, 
         response: pending_requests.toString()
@@ -78,7 +117,7 @@ app.get("/api/pendingRequests", async (req, res) => {
 })
 
 app.get("/api/approvedRequests", async (req, res) => {
-    const approved_requests = await contract_query('getValuesForPartialKey', 'APPROVED Request');
+    const approved_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', 'APPROVED Request');
     res.send({
         success: true, 
         response: approved_requests.toString()
@@ -86,7 +125,7 @@ app.get("/api/approvedRequests", async (req, res) => {
 })
 
 app.get("/api/declinedRequests", async (req, res) => {
-    const declined_requests = await contract_query('getValuesForPartialKey', 'DECLINED Request');
+    const declined_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', 'DECLINED Request');
     res.send({
         success: true, 
         response: declined_requests.toString()
@@ -98,7 +137,7 @@ app.post("/api/createRequest", async (req, res) => {
     const title = req.body.title;
     const descriptions = req.body.descriptions;
     const requestedDepartments = req.body.requestedDepartments;
-    await contract_invoke('createRequest', from_user, title, descriptions, requestedDepartments);
+    await contract_invoke(req.headers.user, 'createRequest', from_user, title, descriptions, requestedDepartments);
     res.send({
         success: true
     });
@@ -108,7 +147,7 @@ app.post("/api/approve", async (req, res) => {
     const req_key = req.body.req_key;
     const department = req.body.department;
     const remarks = req.body.remarks;
-    await contract_invoke('approveRequest', req_key, department, remarks);
+    await contract_invoke(req.headers.user, 'approveRequest', req_key, department, remarks);
     res.send({
         success: true
     });
@@ -118,7 +157,7 @@ app.post("/api/decline", async (req, res) => {
     const req_key = req.body.req_key;
     const department = req.body.department;
     const remarks = req.body.remarks;
-    await contract_invoke('declineRequest', req_key, department, remarks);
+    await contract_invoke(req.headers.user, 'declineRequest', req_key, department, remarks);
     res.send({
         success: true
     });
@@ -126,7 +165,7 @@ app.post("/api/decline", async (req, res) => {
 
 app.post("/api/query", async (req, res) => {
     const qry = req.body.qry;
-    const result = await contract_query(...qry);
+    const result = await contract_query(req.headers.user, ...qry);
     res.send({
         success: true, 
         result
@@ -135,7 +174,7 @@ app.post("/api/query", async (req, res) => {
 
 app.get("/api/invoke", async (req, res) => {
     const invoke_query = req.body.invoke_query;
-    const result = await contract_invoke(...invoke_query);
+    const result = await contract_invoke(req.headers.user, ...invoke_query);
     res.send({
         success: true, 
         result
@@ -143,9 +182,27 @@ app.get("/api/invoke", async (req, res) => {
 })
 
 app.post("/api/login", (req, res) => {
-    if(process.env.dev){
+    if(req.body.UserName && req.body.Password){
+        let login_sql = `SELECT * FROM users WHERE UserName="${req.body.UserName}"`;
+        db.get(login_sql, (err, row) => {
+            if(!err && row && row.Password === req.body.Password){
+                delete row.Password;
+                res.send({
+                    ...row, 
+                    tkn: get_tkn(row)
+                });
+            } else if(!row){
+                res.status(401).send("User Doesn't Exists");
+            } else {
+                res.status(401).send("UserName/Password Doesn't Match.");
+            }
+        })
     } else {
+        res.status(401).send("Username & Password Not Attched.");
     }
+})
+
+app.post("/api/register", (req, res) => {
 })
 
 ////////////////////////// DEFAULT
@@ -162,6 +219,6 @@ app.listen(8000, (err) => {
     if(err){
         console.error(err);
     } else {
-        console.info("Started on 3000");
+        console.info("Started on 8000");
     }
 })
