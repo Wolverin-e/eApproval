@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import PendingRequest from './components/pendingRequests';
 
@@ -31,24 +30,25 @@ class App extends React.Component {
     data: []
   }
   
-  componentDidMount() {
-    fetch('http://127.0.0.1:8000/api/pendingRequests')
-    .then(res => res.json())
-    .then( (res) => { res = res.response
-                      var a = JSON.parse(res)
-                      // a.Val = JSON.parse(a.Val)
-                      console.log(a)
-                      return a} 
-                      )
-    .then((a) => {
-      this.setState({data:a})
-      // console.log(a)
-    })
-    .catch(console.log)
-  }
+  // componentDidMount() {
+  //   fetch('http://127.0.0.1:8000/api/pendingRequests')
+  //   .then(res => res.json())
+  //   .then( (res) => { res = res.response
+  //                     var a = JSON.parse(res)
+  //                     // a.Val = JSON.parse(a.Val)
+  //                     // console.log(a)
+  //                     return a} 
+  //                     )
+  //   .then((a) => {
+  //     this.setState({data:a})
+  //     console.log(a)
+  //   })
+  //   .catch(console.log)
+  // }
 
   render() {
-    return <PendingRequest data = {this.state.data}></PendingRequest>
+    // return <PendingRequest data = {this.state.data}></PendingRequest>
+    return <PendingRequest></PendingRequest>
   }
 }
 
