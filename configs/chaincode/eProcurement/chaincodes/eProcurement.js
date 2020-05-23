@@ -99,6 +99,15 @@ class eProcurement extends Contract {
         return JSON.stringify(results);
     }
 
+    async getRichQueryResult(ctx, query){
+        let results = {};
+        for await (const {key, value} of ctx.stub.getQueryResult(query)) {
+            results[key.split("\u0000").slice(1,-1).join(' ')] = Buffer.from(value).toString("utf-8");
+        }
+        console.log(results);
+        return results;
+    }
+
     // async returnMe(ctx, custom){
     //     var vals = {}
     //     vals['id'] = await ctx.clientIdentity.getID();
