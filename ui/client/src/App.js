@@ -1,30 +1,15 @@
 import React from 'react';
 // import './App.scss';
 import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from 'react-router-dom'
 import PendingRequest from './components/pendingRequests';
 import ApprovedRequest from './components/approvedRequest';
 import DeclinedRequest from './components/declinedRequest';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
+import CreateRequest from './components/createRequest';
 
 class App extends React.Component {
 
@@ -34,11 +19,25 @@ class App extends React.Component {
 
   render() {
     return (
-    <div>
-      <ApprovedRequest></ApprovedRequest>
-      <PendingRequest></PendingRequest>
-      <DeclinedRequest></DeclinedRequest>
-    </div>
+    <Router>
+      <Switch>
+        <div>
+          <Route path ="/createRequest">
+            <CreateRequest></CreateRequest>
+          </Route>
+          <Route path="/publicBoard">
+            <ApprovedRequest></ApprovedRequest>
+            <DeclinedRequest></DeclinedRequest>
+          </Route>
+          <Route path="/org1">
+            <PendingRequest department = "ORG1"></PendingRequest>
+          </Route>
+          <Route path="/org2">
+            <PendingRequest department = "ORG2"></PendingRequest>
+          </Route>
+        </div>
+      </Switch>
+    </Router>
     )
   }
 }
