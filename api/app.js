@@ -5,6 +5,7 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const jwt = require('jsonwebtoken');
 const getCCP = require('./ccp');
+const registerCA = require('./register');
 
 
 /////////////////////////// API
@@ -78,6 +79,7 @@ const contract_invoke = async (user, ...query) => {
 ////////////////////////// API FUNCTIONALITIES
 const exceptions = ['/api/login', '/api/register'];
 const secret_key = process.env.secret_key;
+let tkn_cache = [];
 
 const get_tkn = user_profile => {
     return jwt.sign(user_profile, secret_key, {algorithm: "HS512"});
@@ -85,7 +87,7 @@ const get_tkn = user_profile => {
 
 const verify_tkn = (req, res, next) => {
     jwt.verify(req.headers.tkn, secret_key, (err, decrypted_profile) => {
-        if(!err){
+        if((!err) && tkn_cache.includes(decrypted_profile.UserName)){
             req.headers.user_profile = decrypted_profile;
             req.headers.user = decrypted_profile.UserName;
             next();
@@ -95,6 +97,29 @@ const verify_tkn = (req, res, next) => {
     })
 }
 
+const login = (req, res) => {
+    if(req.body.UserName && req.body.Password){
+        let login_sql = `SELECT * FROM users WHERE UserName="${req.body.UserName}"`;
+        db.get(login_sql, (err, row) => {
+            if(!err && row && row.Password === req.body.Password){
+                delete row.Password;
+                if(! tkn_cache.includes(row.UserName)) tkn_cache.push(row.UserName);
+                res.send({
+                    ...row, 
+                    tkn: get_tkn(row)
+                });
+            } else if(!row){
+                res.status(401).send("User Doesn't Exists");
+            } else {
+                res.status(401).send("UserName/Password Doesn't Match.");
+            }
+        })
+    } else {
+        res.status(401).send("Username & Password Not Attched.");
+    }
+}
+
+////////////////////////// API ROUTES
 app.use((req, res, next) => {
     if(!(process.env.auth_disabled === "true")){
         if(exceptions.includes(req.path)){
@@ -165,10 +190,11 @@ app.post("/api/decline", async (req, res) => {
 
 app.post("/api/query", async (req, res) => {
     const qry = req.body.qry;
+    console.log(typeof(qry), qry)
     const result = await contract_query(req.headers.user, ...qry);
     res.send({
         success: true, 
-        result
+        result: result.toString()
     });
 })
 
@@ -177,32 +203,43 @@ app.get("/api/invoke", async (req, res) => {
     const result = await contract_invoke(req.headers.user, ...invoke_query);
     res.send({
         success: true, 
-        result
+        result: result.toString()
+    });
+})
+
+app.post("/api/runRichQuery", async(req, res) => {
+    const richQuery = JSON.stringify(req.body.richQuery);
+    const result = await contract_query(req.headers.user, "getRichQueryResult", richQuery);
+    res.send({
+        success: true, 
+        result: result.toString()
     });
 })
 
 app.post("/api/login", (req, res) => {
-    if(req.body.UserName && req.body.Password){
-        let login_sql = `SELECT * FROM users WHERE UserName="${req.body.UserName}"`;
-        db.get(login_sql, (err, row) => {
-            if(!err && row && row.Password === req.body.Password){
-                delete row.Password;
-                res.send({
-                    ...row, 
-                    tkn: get_tkn(row)
-                });
-            } else if(!row){
-                res.status(401).send("User Doesn't Exists");
-            } else {
-                res.status(401).send("UserName/Password Doesn't Match.");
-            }
-        })
-    } else {
-        res.status(401).send("Username & Password Not Attched.");
-    }
+    login(req, res);
 })
 
 app.post("/api/register", (req, res) => {
+    if(req.body.UserName && req.body.Password){
+        let register_sql = `INSERT INTO users(UserName, Password, EmailID) \
+                            VALUES("${req.body.UserName}", "${req.body.Password}",\
+                            "${req.body.EmailID?req.body.EmailID:''}")`;
+        db.run(register_sql, (err) => {
+            if(err){
+                if(err.errno === 19){
+                    res.send("USER ALREADY EXISTS!");
+                } else {
+                    res.send(err);
+                }
+            } else {
+                registerCA(req.body.UserName, process.env.ORG);
+                login(req, res);
+            }
+        })
+    } else {
+        res.send("Registration: Username & Password Not Attched!");
+    }
 })
 
 ////////////////////////// DEFAULT
