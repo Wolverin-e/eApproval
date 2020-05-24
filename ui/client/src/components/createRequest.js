@@ -18,12 +18,13 @@ class createRequest extends React.Component {
 
   onChange(e) {
     if (e.target.id === 'from_user') {
-        this.setState({ title: e.target.value });
+        this.setState({ from_user: e.target.value });
     } else if (e.target.id === 'title') {
-        this.setState({ desc: e.target.value });
-    } else if (e.target.id === 'Departments') {
-        this.setState({ type: e.target.value });
-    }
+        this.setState({ title: e.target.value });
+    } else if (e.target.id === 'descriptions') {
+        this.setState({ descriptions: e.target.value });
+    } 
+    //Add org part later
     console.log(e.target.value);
     }
 
