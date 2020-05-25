@@ -4,9 +4,10 @@ const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const jwt = require('jsonwebtoken');
-const getCCP = require('./ccp');
-const registerCA = require('./register');
-
+const getCCP = require('./utils/ccp');
+const registerCA = require('./utils/register');
+let User = require('./utils/User');
+User.dbname='./users.db';
 
 /////////////////////////// API
 const app = express();

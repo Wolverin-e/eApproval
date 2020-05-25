@@ -1,6 +1,6 @@
 const FabricCAServices = require('fabric-ca-client');
 const { Wallets } = require('fabric-network');
-const getCCP = require('./ccp');
+const getCCP = require('./utils/ccp');
 const fs = require('fs');
 const path = require('path');
 

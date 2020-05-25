@@ -1,6 +1,6 @@
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
-const getCCP = require('./ccp');
+const getCCP = require('./utils/ccp');
 const fs = require('fs');
 
 
