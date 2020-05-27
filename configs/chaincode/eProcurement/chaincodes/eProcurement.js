@@ -103,7 +103,6 @@ class eProcurement extends Contract {
                     delete request.privateDataSet[k];
                 }
             }
-            console.log(request);
             results.push({
                 Key: key.split("\u0000").slice(1,-1),
                 Val: request.toJson()
@@ -123,7 +122,6 @@ class eProcurement extends Contract {
             }
             results[key.split("\u0000").slice(1,-1).join(' ')] = request.toJson();
         }
-        console.log(results);
         return results;
     }
 
