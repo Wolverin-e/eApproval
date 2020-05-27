@@ -1,5 +1,4 @@
 const register = require('./utils/register');
-const sqlite3 = require('sqlite3').verbose();
 let User = require('./utils/User');
 
 User.dbname = './users.db'
