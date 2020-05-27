@@ -40,7 +40,19 @@ async function register(username, org) {
         const secret = await ca.register({
             affiliation: org+'.department1',
             enrollmentID: username,
-            role: 'client'
+            role: 'client', 
+            attrs: [
+                {
+                    name: "org", 
+                    value: org.toUpperCase(), 
+                    ecert: true
+                }, 
+                {
+                    name: "username", 
+                    value: username, 
+                    ecert: true
+                }
+            ]
         }, adminUser);
         const enrollment = await ca.enroll({
             enrollmentID: username,

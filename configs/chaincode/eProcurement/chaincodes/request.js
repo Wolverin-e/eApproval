@@ -8,6 +8,7 @@ class Request {
         this.status = '';
         this.approvals = {};
         this.requestedDepartments = [];
+        this.privateDataSet = {};
     }
 
     static from(bufferOrJson){
@@ -19,15 +20,16 @@ class Request {
             bufferOrJson = JSON.parse(bufferOrJson.toString('utf-8'));
         }
 
-        const result = new Request();
-        result.from_user = bufferOrJson.from_user;
-        result.title = bufferOrJson.title;
-        result.description = bufferOrJson.description;
-        result.requestedDepartments = bufferOrJson.requestedDepartments;
-        result.approvals = bufferOrJson.approvals;
-        result.status = bufferOrJson.status;
+        let request = new Request();
+        request.from_user = bufferOrJson.from_user;
+        request.title = bufferOrJson.title;
+        request.description = bufferOrJson.description;
+        request.requestedDepartments = bufferOrJson.requestedDepartments;
+        request.approvals = bufferOrJson.approvals;
+        request.status = bufferOrJson.status;
+        request.privateDataSet = bufferOrJson.privateDataSet;
         
-        return result;
+        return request;
     }
 
     toJson(){
@@ -69,15 +71,17 @@ class Request {
         this.status = this.getOverallStatus();
     }
 
-    approveFor(department, remarks){
+    approveFor(department, remarks, pvtRemarks={}){
         this.approvals[department].status = "APPROVED";
         this.approvals[department].remarks = remarks;
+        this.privateDataSet[department] = pvtRemarks;
         this.updateOverallStatus();
     }
     
-    declineFor(department, remarks){
+    declineFor(department, remarks, pvtRemarks={}){
         this.approvals[department].status = "DECLINED";
         this.approvals[department].remarks = remarks;
+        this.privateDataSet[department] = pvtRemarks;
         this.updateOverallStatus();
     }
 }

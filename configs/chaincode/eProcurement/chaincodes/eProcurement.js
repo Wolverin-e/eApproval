@@ -44,13 +44,13 @@ class eProcurement extends Contract {
         await ctx.stub.putState(key, req.toBuffer());
     }
 
-    async approveRequest(ctx, req_key, department, remarks) {
+    async approveRequest(ctx, req_key, department, remarks, pvtRemarks='{}') {
         req_key = req_key.split(" ")
         let key = ctx.stub.createCompositeKey(req_key[0], req_key.slice(1));
         let req = await ctx.stub.getState(key);
 
         req = Request.from(req);
-        req.approveFor(department, remarks);
+        req.approveFor(department, remarks, JSON.parse(pvtRemarks));
 
         let new_key;
         if(req.status === "APPROVED"){
@@ -62,13 +62,13 @@ class eProcurement extends Contract {
         await ctx.stub.putState(new_key, req.toBuffer());
     }
     
-    async declineRequest(ctx, req_key, department, remarks) {
+    async declineRequest(ctx, req_key, department, remarks, pvtRemarks='{}') {
         req_key = req_key.split(" ")
         let key = ctx.stub.createCompositeKey(req_key[0], req_key.slice(1));
         let req = await ctx.stub.getState(key);
         
         req = Request.from(req);
-        req.declineFor(department, remarks);
+        req.declineFor(department, remarks, JSON.parse(pvtRemarks));
 
         let new_key = ctx.stub.createCompositeKey("DECLINED", req_key.slice(1));
         await ctx.stub.deleteState(key);
@@ -79,9 +79,15 @@ class eProcurement extends Contract {
         req_key = req_key.split(" ")
         req_key = ctx.stub.createCompositeKey(req_key[0], req_key.slice(1));
         let val = await ctx.stub.getState(req_key);
+        let request = Request.from(val);
+        for(let k in request.privateDataSet){
+            if(k !== await ctx.clientIdentity.getAttributeValue('org')){
+                delete request.privateDataSet[k];
+            }
+        }
 
         if (Buffer.isBuffer(val) && !val.length) {
-            return JSON.stringify(Buffer.from(val).toString('utf-8'));
+            return request.toJson();
         } else {
             return "!!!------- EMPTY KEY VALUE PAIR -------!!!!";
         }
@@ -91,9 +97,16 @@ class eProcurement extends Contract {
         req_partial_key = req_partial_key.split(" ");
         let results = [];
         for await ( const {key, value} of ctx.stub.getStateByPartialCompositeKey(req_partial_key[0], req_partial_key.slice(1))) {
+            let request = Request.from(value);
+            for(let k in request.privateDataSet){
+                if(k !== await ctx.clientIdentity.getAttributeValue('org')){
+                    delete request.privateDataSet[k];
+                }
+            }
+            console.log(request);
             results.push({
                 Key: key.split("\u0000").slice(1,-1),
-                Val: Buffer.from(value).toString("utf-8")
+                Val: request.toJson()
             });
         }
         return JSON.stringify(results);
@@ -102,23 +115,25 @@ class eProcurement extends Contract {
     async getRichQueryResult(ctx, query){
         let results = {};
         for await (const {key, value} of ctx.stub.getQueryResult(query)) {
-            results[key.split("\u0000").slice(1,-1).join(' ')] = Buffer.from(value).toString("utf-8");
+            let request = Request.from(value);
+            for(let k in request.privateDataSet){
+                if(k !== await ctx.clientIdentity.getAttributeValue('org')){
+                    delete request.privateDataSet[k];
+                }
+            }
+            results[key.split("\u0000").slice(1,-1).join(' ')] = request.toJson();
         }
         console.log(results);
         return results;
     }
 
-    // async returnMe(ctx, custom){
-    //     var vals = {}
-    //     vals['id'] = await ctx.clientIdentity.getID();
-    //     vals['mspid'] = await ctx.clientIdentity.getMSPID();
-    //     vals['role'] = await ctx.clientIdentity.getAttributeValue('role');
-    //     vals['enrollmentID'] = await ctx.clientIdentity.getAttributeValue('enrollmentID');
-    //     vals['affiliation'] = await ctx.clientIdentity.getAttributeValue('affiliation');
-    //     vals['custom'] = await ctx.clientIdentity.getAttributeValue(custom);
-    //     // vals['X.509'] = await ctx.clientIdentity.getX509Certificate();
-    //     return JSON.stringify(vals);
-    // }
+    async returnMe(ctx, custom){
+        var vals = {}
+        vals['id'] = await ctx.clientIdentity.getID();
+        vals['mspid'] = await ctx.clientIdentity.getMSPID();
+        vals['custom'] = await ctx.clientIdentity.getAttributeValue(custom);
+        return JSON.stringify(vals);
+    }
 }
 
 module.exports = eProcurement;

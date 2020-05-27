@@ -23,6 +23,9 @@ start:
 	./startNet.sh up
 	./deploy.sh -ap
 
+upgrade:
+	./upgrade.sh
+
 stop:
 	./startNet.sh down
 	make stop-apis
