@@ -78,10 +78,11 @@ class eProcurement extends Contract {
     async getValueForKey(ctx, req_key) {
         req_key = req_key.split(" ")
         req_key = ctx.stub.createCompositeKey(req_key[0], req_key.slice(1));
+        let user_org = await ctx.clientIdentity.getAttributeValue('org');
         let val = await ctx.stub.getState(req_key);
         let request = Request.from(val);
         for(let k in request.privateDataSet){
-            if(k !== await ctx.clientIdentity.getAttributeValue('org')){
+            if(k !== user_org){
                 delete request.privateDataSet[k];
             }
         }
@@ -95,11 +96,12 @@ class eProcurement extends Contract {
 
     async getValuesForPartialKey(ctx, req_partial_key) {
         req_partial_key = req_partial_key.split(" ");
+        let user_org = await ctx.clientIdentity.getAttributeValue('org');
         let results = [];
         for await ( const {key, value} of ctx.stub.getStateByPartialCompositeKey(req_partial_key[0], req_partial_key.slice(1))) {
             let request = Request.from(value);
             for(let k in request.privateDataSet){
-                if(k !== await ctx.clientIdentity.getAttributeValue('org')){
+                if(k !== user_org){
                     delete request.privateDataSet[k];
                 }
             }
@@ -112,11 +114,12 @@ class eProcurement extends Contract {
     }
 
     async getRichQueryResult(ctx, query){
+        let user_org = await ctx.clientIdentity.getAttributeValue('org');
         let results = {};
         for await (const {key, value} of ctx.stub.getQueryResult(query)) {
             let request = Request.from(value);
             for(let k in request.privateDataSet){
-                if(k !== await ctx.clientIdentity.getAttributeValue('org')){
+                if(k !== user_org){
                     delete request.privateDataSet[k];
                 }
             }
