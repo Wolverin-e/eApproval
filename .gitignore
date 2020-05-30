@@ -2,6 +2,7 @@
 bin
 */*.DS_Store
 .sandbox
+Video
 
 # Wallet
 wallet
