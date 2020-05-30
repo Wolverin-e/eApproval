@@ -1,6 +1,10 @@
-HOST_IP := $(shell ipconfig getifaddr en0)
+ifeq ($(shell uname -s),Linux)
+	HOST_IP := $(shell ip -6 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+endif
+ifeq ($(shell uname -s),Darwin)
+	HOST_IP := $(shell ipconfig getifaddr en0)
+endif
 export HOST_IP
-
 
 default:
 	make start
