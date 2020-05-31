@@ -44,13 +44,13 @@ class eProcurement extends Contract {
         await ctx.stub.putState(key, req.toBuffer());
     }
 
-    async approveRequest(ctx, req_key, department, remarks, pvtRemarks='{}') {
+    async approveRequest(ctx, req_key, department, remarks, pvtRemarks) {
         req_key = req_key.split(" ")
         let key = ctx.stub.createCompositeKey(req_key[0], req_key.slice(1));
         let req = await ctx.stub.getState(key);
 
         req = Request.from(req);
-        req.approveFor(department, remarks, JSON.parse(pvtRemarks));
+        req.approveFor(department, remarks, JSON.parse(pvtRemarks?pvtRemarks:'{}'));
 
         let new_key;
         if(req.status === "APPROVED"){
@@ -62,13 +62,13 @@ class eProcurement extends Contract {
         await ctx.stub.putState(new_key, req.toBuffer());
     }
     
-    async declineRequest(ctx, req_key, department, remarks, pvtRemarks='{}') {
+    async declineRequest(ctx, req_key, department, remarks, pvtRemarks) {
         req_key = req_key.split(" ")
         let key = ctx.stub.createCompositeKey(req_key[0], req_key.slice(1));
         let req = await ctx.stub.getState(key);
         
         req = Request.from(req);
-        req.declineFor(department, remarks, JSON.parse(pvtRemarks));
+        req.declineFor(department, remarks, JSON.parse(pvtRemarks?pvtRemarks:'{}'));
 
         let new_key = ctx.stub.createCompositeKey("DECLINED", req_key.slice(1));
         await ctx.stub.deleteState(key);

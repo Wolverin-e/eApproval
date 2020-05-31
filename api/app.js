@@ -174,7 +174,7 @@ app.post("/api/approve", async (req, res) => {
     const department = req.body.department;
     const remarks = req.body.remarks;
     const pvtRemarks = req.body.pvtRemarks;
-    await contract_invoke(req.headers.user, 'approveRequest', req_key, department, remarks, JSON.stringify(pvtRemarks));
+    await contract_invoke(req.headers.user, 'approveRequest', req_key, department, remarks, JSON.stringify(pvtRemarks?pvtRemarks:'{}'));
     res.send({
         success: true
     });
@@ -185,7 +185,7 @@ app.post("/api/decline", async (req, res) => {
     const department = req.body.department;
     const remarks = req.body.remarks;
     const pvtRemarks = req.body.pvtRemarks;
-    await contract_invoke(req.headers.user, 'declineRequest', req_key, department, remarks, JSON.stringify(pvtRemarks));
+    await contract_invoke(req.headers.user, 'declineRequest', req_key, department, remarks, JSON.stringify(pvtRemarks?pvtRemarks:'{}'));
     res.send({
         success: true
     });
