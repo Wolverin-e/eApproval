@@ -22,18 +22,17 @@ class PendingRequest extends React.Component {
   }
 
   onChange(e) {
-    if (e.target.id === 'Public_Remarks') {
-        this.setState({ request: {...this.state.request, remarks: e.target.value.toString()} });
-    } else if (e.target.id === 'Private_Request_text') {
-        this.setState({ request: {...this.state.request, pvtRemarks: {...this.state.request.pvtRemarks,text:e.target.value.toString() }} });
-    }
-    console.log(this.state.request.pvtRemarks);
+      if (e.target.id === 'Public_Remarks') {
+          this.setState({ request: {...this.state.request, remarks: e.target.value.toString()} });
+      } else if (e.target.id === 'Private_Request_text') {
+          this.setState({ request: {...this.state.request, pvtRemarks: {...this.state.request.pvtRemarks,text:e.target.value.toString() }} });
+      }
     }
 
-  handleAccept() {
+  handleAccept(e) {
 
-    let request = this.state.request
-    console.log(request)
+    let request = {...this.state.request, req_key:e}
+    // console.log(request)
     fetch('http://127.0.0.1:8000/api/approve', {
         method: 'POST',
         body: JSON.stringify(request),
@@ -51,9 +50,9 @@ class PendingRequest extends React.Component {
     }).catch(err => err);
   }
 
-  handleDecline() {
-    let request = this.state.request
-    console.log(request)
+  handleDecline(e) {
+    let request = {...this.state.request, req_key:e}
+    // console.log(request)
     fetch('http://127.0.0.1:8000/api/decline', {
         method: 'POST',
         body: JSON.stringify(request),
@@ -110,7 +109,7 @@ class PendingRequest extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.data.map(arg => <PendingRequestObj Val = {arg.Val} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>)}
+            {this.state.data.map(arg => <PendingRequestObj Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>)}
           </tbody>
     </table>
     </div>
@@ -120,6 +119,8 @@ class PendingRequest extends React.Component {
 
 
 const PendingRequestObj = (props) => {
+  let req_key = props.Key.reduce( (prev, curr) => prev + " " + curr)
+  // console.log(req_key)
   return (
   <React.Fragment>
     <tr>
@@ -130,7 +131,7 @@ const PendingRequestObj = (props) => {
     <td data-th="Request By">{props.Val.from_user}</td>
     <td data-th="Public Remarks"><input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} /></td>
     <td data-th="Private Remarks"><input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} /></td>
-    <td><button id="Approve" onClick={props.handleAccept}>Approve</button><button id="Decline" onClick={props.handleDecline}>Decline</button></td>
+    <td><button id="Approve" onClick={props.handleAccept(req_key)}>Approve</button><button id="Decline" onClick={props.handleDecline(req_key)}>Decline</button></td>
     </tr>
   </React.Fragment>
   )
