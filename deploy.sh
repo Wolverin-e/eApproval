@@ -365,7 +365,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG1", "Good!"]}' \
+    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG1", "Good!", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.example.com:7051 \
@@ -378,7 +378,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG2", "Good!"]}' \
+    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG2", "Good!", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.example.com:7051 \
@@ -391,7 +391,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"declineRequest","Args":["PENDING Request 2", "ORG1", "Harmful!!"]}' \
+    -c '{"function":"declineRequest","Args":["PENDING Request 2", "ORG1", "Harmful!!", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.example.com:7051 \
