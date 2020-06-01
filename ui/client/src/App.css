@@ -81,3 +81,17 @@ h1 {
 .rwd-table th, .rwd-table td:before {
   color: #dd5;
 }
+.nav-bar ul{
+  list-style-type: none;
+  padding: 20px 0px 20px 0px;
+  margin: 0;
+}
+.nav-bar li{
+  display: inline;
+  padding-right: 10px;
+}
+.nav-bar a{
+  color: #000;
+  text-decoration: underline;
+  font-size: large;
+}

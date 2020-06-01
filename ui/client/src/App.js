@@ -23,10 +23,14 @@ class App extends React.Component {
       <Switch>
         <div>
           <Route path="/">
-            <h2><a href="../createRequest">Create Request</a></h2>
-            <h2><a href="../org1">ORG1</a></h2>
-            <h2><a href="../org2">ORG2</a></h2>
-            <h2><a href="../publicBoard">Public Board</a></h2>
+            <div className="nav-bar">
+              <ul>
+                <li><a href="../createRequest">Create Request</a></li>
+                <li><a href="../org1">ORG1</a></li>
+                <li><a href="../org2">ORG2</a></li>
+                <li><a href="../publicBoard">Public Board</a></li>
+              </ul>
+            </div>
           </Route>
           <Route path ="/createRequest">
             <CreateRequest></CreateRequest>

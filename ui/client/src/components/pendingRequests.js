@@ -125,14 +125,21 @@ const PendingRequestObj = (props) => {
   return (
   <React.Fragment>
     <tr>
-    <td data-th="Title">{props.Val.title}</td>
-    <td data-th="Description">{props.Val.description}</td>
-    <td data-th="ORG1">{props.Val.approvals.ORG1.status}</td>
-    <td data-th="ORG2">{props.Val.approvals.ORG2.status}</td>
-    <td data-th="Request By">{props.Val.from_user}</td>
-    <td data-th="Public Remarks"><input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} /></td>
-    <td data-th="Private Remarks"><input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} /></td>
-    <td><button id={props.Key.reduce( (prev, curr) => prev + " " + curr).toString()} onClick={props.handleAccept}>Approve</button><button id={props.Key.reduce( (prev, curr) => prev + " " + curr)} onClick={props.handleDecline}>Decline</button></td>
+      <td data-th="Title">{props.Val.title}</td>
+      <td data-th="Description">{props.Val.description}</td>
+      <td data-th="ORG1">{props.Val.approvals.ORG1.status}</td>
+      <td data-th="ORG2">{props.Val.approvals.ORG2.status}</td>
+      <td data-th="Request By">{props.Val.from_user}</td>
+      <td data-th="Public Remarks">
+        {props.Val.approvals.ORG1.remarks?props.Val.approvals.ORG1.remarks:<input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} />}
+      </td>
+      <td data-th="Private Remarks">
+        {props.Val.privateDataSet.ORG1?props.Val.privateDataSet.ORG1.text:<input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} />}
+      </td>
+      <td>
+        <button id={props.Key.reduce( (prev, curr) => prev + " " + curr).toString()} onClick={props.handleAccept}>Approve</button>
+        <button id={props.Key.reduce( (prev, curr) => prev + " " + curr)} onClick={props.handleDecline}>Decline</button>
+      </td>
     </tr>
   </React.Fragment>
   )
