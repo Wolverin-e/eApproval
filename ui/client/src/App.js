@@ -21,7 +21,7 @@ class App extends React.Component {
     return (
     <Router>
       <Switch>
-        <div>
+        <React.Fragment>
           <Route path="/">
             <div className="nav-bar">
               <ul>
@@ -32,20 +32,20 @@ class App extends React.Component {
               </ul>
             </div>
           </Route>
-          <Route path ="/createRequest">
-            <CreateRequest></CreateRequest>
+          <Route path="/createRequest">
+            <CreateRequest />
           </Route>
           <Route path="/publicBoard">
-            <ApprovedRequest></ApprovedRequest>
-            <DeclinedRequest></DeclinedRequest>
+            <ApprovedRequest />
+            <DeclinedRequest />
           </Route>
           <Route path="/org1">
-            <PendingRequest department = "ORG1"></PendingRequest>
+            <PendingRequest department = "ORG1" />
           </Route>
           <Route path="/org2">
-            <PendingRequest department = "ORG2"></PendingRequest>
+            <PendingRequest department = "ORG2" />
           </Route>
-        </div>
+        </React.Fragment>
       </Switch>
     </Router>
     )

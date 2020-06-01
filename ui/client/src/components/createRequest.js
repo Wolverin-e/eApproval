@@ -52,17 +52,17 @@ class createRequest extends React.Component {
     return (
         <div>
         <form>
-          <label htmlfor="from_user">Username:</label><br/>
+          <label htmlFor="from_user">Username:</label><br/>
           <input type="text" id="from_user" name="from_user" onChange={this.onChange} /><br/>
-          <label htmlfor="title">title:</label><br/>
+          <label htmlFor="title">title:</label><br/>
           <input type="text" id="title" name="title"  onChange={this.onChange} /><br/><br/>
-          <label htmlfor="descriptions">description:</label><br/>
+          <label htmlFor="descriptions">description:</label><br/>
           <input type="textfield" id="descriptions" name="descriptions" onChange={this.onChange} /><br/><br/>
-          <label htmlfor="descriptions">Departments::</label><br/>
+          <label htmlFor="descriptions">Departments::</label><br/>
           <input type="checkbox" id="ORG1" name="ORG1" value="ORG1" onChange={this.onChange} />
-            <label htmlfor="ORG1"> ORG1</label><br/>
+            <label htmlFor="ORG1"> ORG1</label><br/>
             <input type="checkbox" id="ORG2" name="ORG2" value="ORG2" onChange={this.onChange}/>
-            <label htmlfor="ORG2"> ORG2</label><br/><br/>
+            <label htmlFor="ORG2"> ORG2</label><br/><br/>
           <input type="submit" onClick={this.handleSubmit}/>
         </form>
         </div>

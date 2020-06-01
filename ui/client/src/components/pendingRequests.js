@@ -110,7 +110,7 @@ class PendingRequest extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.data.map(arg => <PendingRequestObj Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>)}
+            {this.state.data.map((arg, i) => <PendingRequestObj key={i} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>)}
           </tbody>
     </table>
     </div>
