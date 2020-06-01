@@ -30,15 +30,19 @@ class DeclinedRequest extends React.Component {
     return (
       <div>
         <h2>Declined Request</h2>
-        <table class="rwd-table">
-          <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>ORG1</th>
-            <th>ORG2</th>
-            <th>Request By</th>
-          </tr>
-          {this.state.data.map(arg => <DeclinedRequestObj Val = {arg.Val}/>)}
+        <table className="rwd-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>ORG1</th>
+              <th>ORG2</th>
+              <th>Request By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.data.map((arg, i) => <DeclinedRequestObj key={i} Val={arg.Val}/>)}
+          </tbody>
     </table>
     </div>
     )
