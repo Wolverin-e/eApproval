@@ -72,7 +72,7 @@ class PendingRequest extends React.Component {
   }
 
   componentDidMount() {
-    fetch('http://127.0.0.1:8000/api/pendingRequests')
+    fetch('http://127.0.0.1:'+(this.props.department==="ORG1"?"8000":"8001")+'/api/pendingRequests')
     .then(res => res.json())
     .then( (res) => {
       res = res.response
@@ -110,7 +110,9 @@ class PendingRequest extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.data.map((arg, i) => <PendingRequestObj key={i} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>)}
+            {this.state.data.map((arg, i) => 
+              <PendingRequestObj key={i} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>
+            )}
           </tbody>
     </table>
     </div>
