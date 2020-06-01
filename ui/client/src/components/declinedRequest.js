@@ -53,7 +53,7 @@ const DeclinedRequestObj = (props) => {
     <td data-th="Title">{props.Val.title}</td>
     <td data-th="Description">{props.Val.description}</td>
     <td data-th="ORG1">{props.Val.approvals.ORG1.status}</td>
-    <td data-th="ORG2">{props.Val.approvals.ORG1.status}</td>
+    <td data-th="ORG2">{props.Val.approvals.ORG2.status}</td>
     <td data-th="Request By">{props.Val.from_user}</td>
     </tr>
   </React.Fragment>

@@ -22,6 +22,12 @@ class App extends React.Component {
     <Router>
       <Switch>
         <div>
+          <Route path="/">
+            <h2><a href="../createRequest">Create Request</a></h2>
+            <h2><a href="../org1">ORG1</a></h2>
+            <h2><a href="../org2">ORG2</a></h2>
+            <h2><a href="../publicBoard">Public Board</a></h2>
+          </Route>
           <Route path ="/createRequest">
             <CreateRequest></CreateRequest>
           </Route>

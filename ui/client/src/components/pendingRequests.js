@@ -31,9 +31,30 @@ class PendingRequest extends React.Component {
 
   handleAccept(e) {
 
-    let request = {...this.state.request, req_key:e}
-    // console.log(request)
+    let request = {...this.state.request, req_key:e.target.id}
+    console.log(e.target.id)
+    console.log(request)
     fetch('http://127.0.0.1:8000/api/approve', {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response =>  {
+      if (response.status >= 200 && response.status < 300) {
+        console.log(response.json());
+        window.location.reload();
+        return response;
+          } else {
+           console.log('Somthing happened wrong');
+          }
+    }).catch(err => err);
+  }
+
+  handleDecline(e) {
+    let request = {...this.state.request, req_key:e.target.id}
+    console.log("HandleDecline Iniciated")
+    fetch('http://127.0.0.1:8000/api/decline', {
         method: 'POST',
         body: JSON.stringify(request),
         headers: {
@@ -44,26 +65,6 @@ class PendingRequest extends React.Component {
             console.log(response);
             window.location.reload();
             return response;
-          } else {
-           console.log('Somthing happened wrong');
-          }
-    }).catch(err => err);
-  }
-
-  handleDecline(e) {
-    let request = {...this.state.request, req_key:e}
-    // console.log(request)
-    fetch('http://127.0.0.1:8000/api/decline', {
-        method: 'POST',
-        body: JSON.stringify(request),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
-        if (response.status >= 200 && response.status < 300) {
-            console.log(response);
-            return response;
-            // window.location.reload();
           } else {
            console.log('Somthing happened wrong');
           }
@@ -119,7 +120,7 @@ class PendingRequest extends React.Component {
 
 
 const PendingRequestObj = (props) => {
-  let req_key = props.Key.reduce( (prev, curr) => prev + " " + curr)
+  // let req_key = props.Key.reduce( (prev, curr) => prev + " " + curr)
   // console.log(req_key)
   return (
   <React.Fragment>
@@ -127,11 +128,11 @@ const PendingRequestObj = (props) => {
     <td data-th="Title">{props.Val.title}</td>
     <td data-th="Description">{props.Val.description}</td>
     <td data-th="ORG1">{props.Val.approvals.ORG1.status}</td>
-    <td data-th="ORG2">{props.Val.approvals.ORG1.status}</td>
+    <td data-th="ORG2">{props.Val.approvals.ORG2.status}</td>
     <td data-th="Request By">{props.Val.from_user}</td>
     <td data-th="Public Remarks"><input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} /></td>
     <td data-th="Private Remarks"><input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} /></td>
-    <td><button id="Approve" onClick={props.handleAccept(req_key)}>Approve</button><button id="Decline" onClick={props.handleDecline(req_key)}>Decline</button></td>
+    <td><button id={props.Key.reduce( (prev, curr) => prev + " " + curr).toString()} onClick={props.handleAccept}>Approve</button><button id={props.Key.reduce( (prev, curr) => prev + " " + curr)} onClick={props.handleDecline}>Decline</button></td>
     </tr>
   </React.Fragment>
   )
