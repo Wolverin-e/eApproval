@@ -111,7 +111,7 @@ class PendingRequest extends React.Component {
           </thead>
           <tbody>
             {this.state.data.map((arg, i) => 
-              <PendingRequestObj key={i} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>
+              <PendingRequestObj key={i} department={this.props.department} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>
             )}
           </tbody>
     </table>
@@ -133,10 +133,18 @@ const PendingRequestObj = (props) => {
       <td data-th="ORG2">{props.Val.approvals.ORG2.status}</td>
       <td data-th="Request By">{props.Val.from_user}</td>
       <td data-th="Public Remarks">
-        {props.Val.approvals.ORG1.remarks?props.Val.approvals.ORG1.remarks:<input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} />}
+        {
+          props.Val.approvals[props.department].remarks?
+            props.Val.approvals[props.department].remarks:
+            <input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} />
+        }
       </td>
       <td data-th="Private Remarks">
-        {props.Val.privateDataSet.ORG1?props.Val.privateDataSet.ORG1.text:<input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} />}
+        {
+          props.Val.privateDataSet[props.department]?
+            props.Val.privateDataSet[props.department].text:
+            <input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} />
+        }
       </td>
       <td>
         <button id={props.Key.reduce( (prev, curr) => prev + " " + curr).toString()} onClick={props.handleAccept}>Approve</button>
