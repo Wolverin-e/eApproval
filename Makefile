@@ -33,4 +33,4 @@ upgrade:
 stop:
 	./startNet.sh down
 	make stop-apis
-	make rm-images
+	# make rm-images
