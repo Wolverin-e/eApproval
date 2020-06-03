@@ -16,7 +16,7 @@ class createRequest extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  async onChange(e) {
+  onChange(e) {
     if (e.target.id === 'from_user') {
       this.setState({ from_user: e.target.value });
     } else if (e.target.id === 'title') {
@@ -36,32 +36,31 @@ class createRequest extends React.Component {
           requestedDepartments: a.filter(org => org !== e.target.name).join(' ')
         })
       }
-      console.log(this.state.requestedDepartments)
     }
   }
 
   handleSubmit() {
     fetch('http://127.0.0.1:8000/api/createRequest', {
-        method: 'POST',
-        body: JSON.stringify(this.state),
-        headers: {
-            'Content-Type': 'application/json'
-        }
+      method: 'POST',
+      body: JSON.stringify(this.state),
+      headers: {
+          'Content-Type': 'application/json'
+      }
     }).then(response => {
-        if (response.status >= 200 && response.status < 300) {
-            console.log(response);
-            return response;
-            // window.location.reload();
-          } else {
-            console.log('Somthing happened wrong');
-          }
+      if (response.status >= 200 && response.status < 300) {
+        console.log(response);
+        return response;
+        // window.location.reload();
+      } else {
+        console.log('Somthing happened wrong');
+      }
     }).catch(err => err);
   }
 
   render() {
 
     return (
-        <div>
+      <div>
         <form>
           <label htmlFor="from_user">Username:</label><br/>
           <input type="text" id="from_user" name="from_user" onChange={this.onChange} /><br/>
@@ -76,8 +75,7 @@ class createRequest extends React.Component {
           <label htmlFor="ORG2"> ORG2</label><br/><br/>
           <input type="submit" onClick={this.handleSubmit}/>
         </form>
-        </div>
-
+      </div>
     )
   }
 }
