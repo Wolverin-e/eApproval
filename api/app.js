@@ -223,23 +223,12 @@ app.post("/api/login", (req, res) => {
     login(req, res);
 })
 
-app.post("/api/register", (req, res) => {
+app.post("/api/register", async (req, res) => {
     if(req.body.UserName && req.body.Password){
-        let register_sql = `INSERT INTO users(UserName, Password, EmailID) \
-                            VALUES("${req.body.UserName}", "${req.body.Password}",\
-                            "${req.body.EmailID?req.body.EmailID:''}")`;
-        db.run(register_sql, (err) => {
-            if(err){
-                if(err.errno === 19){
-                    res.send("USER ALREADY EXISTS!");
-                } else {
-                    res.send(err);
-                }
-            } else {
-                registerCA(req.body.UserName, process.env.ORG);
-                login(req, res);
-            }
-        })
+        let user = new User(0, req.body.UserName, req.body.Password);
+        await user.saveToDB()
+        await registerCA(req.body.UserName, process.env.ORG);
+        login(req, res);
     } else {
         res.send("Registration: Username & Password Not Attched!");
     }

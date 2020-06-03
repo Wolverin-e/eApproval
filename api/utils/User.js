@@ -65,12 +65,12 @@ class User{
         })
     }
 
-    saveToDB(){
+    async saveToDB(){
         let db = User.getDBInstance();
-        let oldUserInstance = User.getDBInstance(this.UserName);
+        let oldUserInstance = await User.getUserFromDB(this.UserName);
         return new Promise((resolve, reject) => {
             let sql;
-            if(oldUserInstance !== {}){
+            if(Object.keys(oldUserInstance).length){
                 sql = `UPDATE users \
                        SET 
                            Password='${this.Password}',\
