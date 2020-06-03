@@ -110,9 +110,11 @@ class PendingRequest extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.data.map((arg, i) => 
-              <PendingRequestObj key={i} department={this.props.department} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>
-            )}
+            {this.state.data.map((arg, i) => {
+              return arg.Val.requestedDepartments.includes(this.props.department)?
+                <PendingRequestObj key={i} department={this.props.department} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>:
+                true;
+            })}
           </tbody>
     </table>
     </div>
@@ -129,8 +131,12 @@ const PendingRequestObj = (props) => {
     <tr>
       <td data-th="Title">{props.Val.title}</td>
       <td data-th="Description">{props.Val.description}</td>
-      <td data-th="ORG1">{props.Val.approvals.ORG1.status}</td>
-      <td data-th="ORG2">{props.Val.approvals.ORG2.status}</td>
+      <td data-th="ORG1">
+        {props.Val.approvals.ORG1?props.Val.approvals.ORG1.status:'------'}
+      </td>
+      <td data-th="ORG2">
+        {props.Val.approvals.ORG2?props.Val.approvals.ORG2.status:'------'}
+      </td>
       <td data-th="Request By">{props.Val.from_user}</td>
       <td data-th="Public Remarks">
         {

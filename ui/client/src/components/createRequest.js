@@ -10,42 +10,53 @@ class createRequest extends React.Component {
         from_user: '',
         title: '',
         descriptions: '',
-        requestedDepartments: "ORG1 ORG2"
+        requestedDepartments: ""
       }
     this.onChange = this.onChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  onChange(e) {
+  async onChange(e) {
     if (e.target.id === 'from_user') {
-        this.setState({ from_user: e.target.value });
+      this.setState({ from_user: e.target.value });
     } else if (e.target.id === 'title') {
-        this.setState({ title: e.target.value });
+      this.setState({ title: e.target.value });
     } else if (e.target.id === 'descriptions') {
-        this.setState({ descriptions: e.target.value });
-    } 
-    //Add org part later
-    console.log(e.target.value);
+      this.setState({ descriptions: e.target.value });
+    } else {
+      let a = this.state.requestedDepartments.split(' ');
+      a = a.filter(a => a !== '');
+      if(e.target.checked){
+        a.push(e.target.name);
+        this.setState({
+          requestedDepartments: a.join(' ')
+        })
+      } else {
+        this.setState({ 
+          requestedDepartments: a.filter(org => org !== e.target.name).join(' ')
+        })
+      }
+      console.log(this.state.requestedDepartments)
     }
+  }
 
-    handleSubmit() {
-
-        fetch('http://127.0.0.1:8000/api/createRequest', {
-            method: 'POST',
-            body: JSON.stringify(this.state),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
-            if (response.status >= 200 && response.status < 300) {
-                console.log(response);
-                return response;
-                // window.location.reload();
-              } else {
-               console.log('Somthing happened wrong');
-              }
-        }).catch(err => err);
-    }
+  handleSubmit() {
+    fetch('http://127.0.0.1:8000/api/createRequest', {
+        method: 'POST',
+        body: JSON.stringify(this.state),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.status >= 200 && response.status < 300) {
+            console.log(response);
+            return response;
+            // window.location.reload();
+          } else {
+            console.log('Somthing happened wrong');
+          }
+    }).catch(err => err);
+  }
 
   render() {
 
@@ -60,9 +71,9 @@ class createRequest extends React.Component {
           <input type="textfield" id="descriptions" name="descriptions" onChange={this.onChange} /><br/><br/>
           <label htmlFor="descriptions">Departments::</label><br/>
           <input type="checkbox" id="ORG1" name="ORG1" value="ORG1" onChange={this.onChange} />
-            <label htmlFor="ORG1"> ORG1</label><br/>
-            <input type="checkbox" id="ORG2" name="ORG2" value="ORG2" onChange={this.onChange}/>
-            <label htmlFor="ORG2"> ORG2</label><br/><br/>
+          <label htmlFor="ORG1"> ORG1</label><br/>
+          <input type="checkbox" id="ORG2" name="ORG2" value="ORG2" onChange={this.onChange}/>
+          <label htmlFor="ORG2"> ORG2</label><br/><br/>
           <input type="submit" onClick={this.handleSubmit}/>
         </form>
         </div>

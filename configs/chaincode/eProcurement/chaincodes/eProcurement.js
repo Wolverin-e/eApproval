@@ -4,7 +4,7 @@ const { Contract } = require('fabric-contract-api');
 const Request = require("./request");
 
 const createCompositeKey = (parentKey, childrenKeys) => {
-    return '|'+parentKey+'|'+childrenKeys.join('|')+'|'
+    return parentKey+'|'+childrenKeys.join('|')
 }
 
 class eProcurement extends Contract {
@@ -117,7 +117,7 @@ class eProcurement extends Contract {
                 }
             }
             results.push({
-                Key: key.split("|").slice(1,-1),
+                Key: key.split("|"),
                 Val: request.toJson()
             });
         }
@@ -134,7 +134,7 @@ class eProcurement extends Contract {
                     delete request.privateDataSet[k];
                 }
             }
-            results[key.split("|").slice(1,-1).join(' ')] = request.toJson();
+            results[key.split("|").join(' ')] = request.toJson();
         }
         return results;
     }
