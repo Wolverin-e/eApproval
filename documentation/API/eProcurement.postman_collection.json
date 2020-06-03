@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "53ef89fc-9e74-45ae-bd43-a30fcae0a213",
+		"name": "eProcurement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8000/api/createRequest",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "tkn",
+						"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsIlVzZXJOYW1lIjoidXNlcjQiLCJFbWFpbElEIjoiIiwiaWF0IjoxNTkwMTU2OTQzfQ.T_szYJlVbkmRtXWrRDGRkUNyZe-pOux1ePxFohokfWXXXjsEEgjJtBKoRErVeajX_n-Upbzo6hGyPrzO9NUKnQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from_user\": \"Mitul\", \n\t\"title\": \"Plastic Factory\", \n\t\"descriptions\": \"I want to create .....\", \n\t\"requestedDepartments\": \"ORG1 ORG2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/createRequest",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"createRequest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/api/pendingRequests",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "tkn",
+						"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjMsIlVzZXJOYW1lIjoidXNlcjkiLCJFbWFpbElEIjoiIiwiaWF0IjoxNTkwMjI0NjA0fQ.qn_okhsRgUi_1O1lG6pECdV7uH2VN_A7cspt9w2MUeu-uSwoqX0b7yiGsADBLZLGtczeePFAxQ25dT3A-Txd0g",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8001/api/pendingRequests",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"api",
+						"pendingRequests"
+					],
+					"query": [
+						{
+							"key": "tkn",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjMsIlVzZXJOYW1lIjoidXNlcjIiLCJFbWFpbElEIjoiIiwiaWF0IjoxNTkwMTY5NzIxfQ.TsaaV76pBycG0-QcTwabYktzMeEc1EJpg0loiI0Qsqs4GxVVCVboi1Kzt6iB7RXo7Smujm8esLvW7uf0L3tzGQ",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/api/approvedRequests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/approvedRequests",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"approvedRequests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/api/declinedRequests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/declinedRequests",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"declinedRequests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/api/approve",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "tkn",
+						"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjIsIlVzZXJOYW1lIjoidXNlcjQiLCJFbWFpbElEIjoiIiwiaWF0IjoxNTkwMTU2OTQzfQ.T_szYJlVbkmRtXWrRDGRkUNyZe-pOux1ePxFohokfWXXXjsEEgjJtBKoRErVeajX_n-Upbzo6hGyPrzO9NUKnQ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"req_key\": \"PENDING Request 5\", \n\t\"department\": \"\",\n\t\"remarks\": \"GOOD!\", \n\t\"pvtRemarks\": {\n\t\t\"rating\": 5\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/api/approve",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"api",
+						"approve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/api/decline",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"req_key\": \"PENDING Request 3\", \n\t\"department\": \"ORG2\", \n\t\"remarks\": \"HARMFUL!\", \n\t\"pvtRemarks\": {\n\t\t\"rating\": -1\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/decline",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"decline"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/api/query",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"qry\": [\"getTotalRequests\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/query",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"query"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8001/api/runRichQuery",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "tkn",
+						"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjEsIlVzZXJOYW1lIjoidXNlcjEiLCJFbWFpbElEIjoiIiwiaWF0IjoxNTkwMTcwNDQ3fQ.StdV8Kbi-ssWjhp82Pk6aJUFVftNeLej6ESHzwON_fP1o4o41o1oaaeT1BUEPncMc8FbOBQge-YRspAVl0892Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\t\"richQuery\": {\n\t\t\t\"selector\": {\n\t\t\t\t\"_id\": {\"$regex\": \"PENDING.Request\"}\n\t\t\t}\n\t\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8001/api/runRichQuery",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"api",
+						"runRichQuery"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/api/login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"UserName\": \"user1\", \n\t\"Password\": \"123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/api/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"UserName\": \"user9\", \n\t\"Password\": \"123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
