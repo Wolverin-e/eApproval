@@ -44,7 +44,7 @@ class eProcurement extends Contract {
         req.updateOverallStatus();
         
         const count = await this.incrementTotalRequests(ctx);
-        let key = await createCompositeKey('PENDING', ['Request', `${count}`]);
+        let key = createCompositeKey('PENDING', ['Request', `${count}`]);
         await ctx.stub.putState(key, req.toBuffer());
     }
 
