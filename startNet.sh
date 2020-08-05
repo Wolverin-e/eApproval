@@ -63,7 +63,6 @@ function generateCerts(){
     checkResult
 
     popd > /dev/null
-    ################ !!!!!!!!!! CCP GENERATION LEFT
 
     echo
 }
@@ -83,7 +82,7 @@ function generateChannelArtifacts(){
     echo "#########  Generating Orderer Genesis block ##############"
     echo "##########################################################"
     set -x
-    configtxgen -profile SampleMultiNodeEtcdRaft -channelID byfn-sys-channel \
+    configtxgen -profile SampleMultiNodeEtcdRaft -channelID $SYS_CHANNEL \
         -outputBlock ./channel-artifacts/genesis.block
     checkResult
 
