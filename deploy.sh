@@ -422,7 +422,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
 fi
 
 if [ "${START_EXPLORER}" != "false" ]; then
-  pushd ./configs >> /dev/null
+  pushd ./configs > /dev/null
   echo
   echo "#######################################"
   echo "####### Starting The EXPLORER #########"
@@ -433,4 +433,7 @@ if [ "${START_EXPLORER}" != "false" ]; then
   up -d
 
   checkResult
+
+  popd > /dev/null
+  echo
 fi
