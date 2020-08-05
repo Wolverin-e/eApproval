@@ -81,19 +81,19 @@ done
 # Setting The Paths..
 CONFIG_ROOT=/root/crypto
 #----------------------------------#
-ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-ORG1_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-ORG2_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org1.eapproval.com/users/Admin@org1.eapproval.com/msp
+ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org2.eapproval.com/users/Admin@org2.eapproval.com/msp
+ORG1_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org1.eapproval.com/peers/peer0.org1.eapproval.com/tls/ca.crt
+ORG2_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org2.eapproval.com/peers/peer0.org2.eapproval.com/tls/ca.crt
 #----------------------------------#
-DEFAULT_ORDERER=orderer.example.com:7050
-ORDERER_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+DEFAULT_ORDERER=orderer.eapproval.com:7050
+ORDERER_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/ordererOrganizations/eapproval.com/orderers/orderer.eapproval.com/msp/tlscacerts/tlsca.eapproval.com-cert.pem
 #----------------------------------#
 
 
 PEER0_ORG1="docker exec
 -e CORE_PEER_LOCALMSPID=Org1MSP
--e CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+-e CORE_PEER_ADDRESS=peer0.org1.eapproval.com:7051
 -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH}
 -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE}
 cli
@@ -105,7 +105,7 @@ peer
 
 PEER0_ORG2="docker exec
 -e CORE_PEER_LOCALMSPID=Org2MSP
--e CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+-e CORE_PEER_ADDRESS=peer0.org2.eapproval.com:9051
 -e CORE_PEER_MSPCONFIGPATH=${ORG2_MSPCONFIGPATH}
 -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE}
 cli
@@ -165,7 +165,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "##############################################################"
-  echo "####### PACKAGING CHAINCODE ON peer0.org1.example.com ########"
+  echo "####### PACKAGING CHAINCODE ON peer0.org1.eapproval.com ########"
   echo "##############################################################"
   ${PEER0_ORG1} lifecycle chaincode package \
     ${CC_NAME}.tar.gz \
@@ -178,7 +178,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "##############################################################"
-  echo "####### INSTALLING CHAINCODE ON peer0.org1.example.com #######"
+  echo "####### INSTALLING CHAINCODE ON peer0.org1.eapproval.com #######"
   echo "##############################################################"
   ${PEER0_ORG1} lifecycle chaincode install \
     ${CC_NAME}.tar.gz
@@ -190,7 +190,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
     PACKAGE_ID_ORG1=${BASH_REMATCH[1]}
     echo $PACKAGE_ID_ORG1
   else
-    echo Could not find package ID for ${CC_NAME}v1 chaincode on peer0.org1.example.com
+    echo Could not find package ID for ${CC_NAME}v1 chaincode on peer0.org1.eapproval.com
     exit 1
   fi
 
@@ -213,7 +213,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "##############################################################"
-  echo "####### PACKAGING CHAINCODE ON peer0.org2.example.com ########"
+  echo "####### PACKAGING CHAINCODE ON peer0.org2.eapproval.com ########"
   echo "##############################################################"
   ${PEER0_ORG2} lifecycle chaincode package \
     ${CC_NAME}.tar.gz \
@@ -226,7 +226,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 
   echo
   echo "##############################################################"
-  echo "####### INSTALLING CHAINCODE ON peer0.org2.example.com #######"
+  echo "####### INSTALLING CHAINCODE ON peer0.org2.eapproval.com #######"
   echo "##############################################################"
   ${PEER0_ORG2} lifecycle chaincode install ${CC_NAME}.tar.gz
   checkResult
@@ -237,7 +237,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
     PACKAGE_ID_ORG2=${BASH_REMATCH[1]}
     echo $PACKAGE_ID_ORG2
   else
-    echo Could not find package ID for ${CC_NAME}v1 chaincode on peer0.org2.example.com
+    echo Could not find package ID for ${CC_NAME}v1 chaincode on peer0.org2.eapproval.com
     exit 1
   fi
 
@@ -269,8 +269,8 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
     --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
     --sequence 1 \
     --waitForEvent \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -287,8 +287,8 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
     -c '{"function":"initLedger","Args":[]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -303,7 +303,7 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
     -C mychannel \
     -n ${CC_NAME} \
     -c '{"function":"getTotalRequests","Args":[]}' \
-    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
   checkResult
   echo
@@ -321,8 +321,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"createRequest","Args":["Alpha", "Cell Phone Tower", "Tower Outside of Town.", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -334,8 +334,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"createRequest","Args":["Beta", "Chemical Factory", "Chemical Factory Inside Town.", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -347,8 +347,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"createRequest","Args":["Gamma", "Ice-cream Factory", "Ice-cream Factory inside Town.", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -360,8 +360,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"createRequest","Args":["Delta", "Coal mine", "Coal mine inside Town.", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -373,8 +373,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG1", "Good!", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -386,8 +386,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG2", "Good!", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -399,8 +399,8 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -c '{"function":"declineRequest","Args":["PENDING Request 2", "ORG1", "Harmful!!", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
-    --peerAddresses peer0.org1.example.com:7051 \
-    --peerAddresses peer0.org2.example.com:9051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
+    --peerAddresses peer0.org2.eapproval.com:9051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
     --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
   checkResult
@@ -415,7 +415,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
     -C mychannel \
     -n ${CC_NAME} \
     -c '{"function":"getTotalRequests","Args":[]}' \
-    --peerAddresses peer0.org1.example.com:7051 \
+    --peerAddresses peer0.org1.eapproval.com:7051 \
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
   checkResult
   echo

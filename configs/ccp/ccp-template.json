@@ -15,27 +15,27 @@
         "Org${ORG}": {
             "mspid": "Org${ORG}MSP",
             "peers": [
-                "peer0.org${ORG}.example.com"
+                "peer0.org${ORG}.eapproval.com"
             ],
             "certificateAuthorities": [
-                "ca.org${ORG}.example.com"
+                "ca.org${ORG}.eapproval.com"
             ]
         }
     },
     "peers": {
-        "peer0.org${ORG}.example.com": {
+        "peer0.org${ORG}.eapproval.com": {
             "url": "grpcs://host.docker.internal:${P0PORT}",
             "tlsCACerts": {
                 "pem": "${PEERPEM}"
             },
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org${ORG}.example.com",
-                "hostnameOverride": "peer0.org${ORG}.example.com"
+                "ssl-target-name-override": "peer0.org${ORG}.eapproval.com",
+                "hostnameOverride": "peer0.org${ORG}.eapproval.com"
             }
         }
     },
     "certificateAuthorities": {
-        "ca.org${ORG}.example.com": {
+        "ca.org${ORG}.eapproval.com": {
             "url": "https://host.docker.internal:${CAPORT}",
             "caName": "ca-org${ORG}",
             "tlsCACerts": {

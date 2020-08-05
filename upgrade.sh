@@ -60,18 +60,18 @@ done
 
 CONFIG_ROOT=/root/crypto
 #----------------------------------#
-ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
-ORG1_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-ORG2_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+ORG1_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org1.eapproval.com/users/Admin@org1.eapproval.com/msp
+ORG2_MSPCONFIGPATH=${CONFIG_ROOT}/peerOrganizations/org2.eapproval.com/users/Admin@org2.eapproval.com/msp
+ORG1_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org1.eapproval.com/peers/peer0.org1.eapproval.com/tls/ca.crt
+ORG2_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/peerOrganizations/org2.eapproval.com/peers/peer0.org2.eapproval.com/tls/ca.crt
 #----------------------------------#
-DEFAULT_ORDERER=orderer.example.com:7050
-ORDERER_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+DEFAULT_ORDERER=orderer.eapproval.com:7050
+ORDERER_TLS_ROOTCERT_FILE=${CONFIG_ROOT}/ordererOrganizations/eapproval.com/orderers/orderer.eapproval.com/msp/tlscacerts/tlsca.eapproval.com-cert.pem
 #----------------------------------#
 
 PEER0_ORG1="docker exec
 -e CORE_PEER_LOCALMSPID=Org1MSP
--e CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+-e CORE_PEER_ADDRESS=peer0.org1.eapproval.com:7051
 -e CORE_PEER_MSPCONFIGPATH=${ORG1_MSPCONFIGPATH}
 -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG1_TLS_ROOTCERT_FILE}
 cli
@@ -83,7 +83,7 @@ peer
 
 PEER0_ORG2="docker exec
 -e CORE_PEER_LOCALMSPID=Org2MSP
--e CORE_PEER_ADDRESS=peer0.org2.example.com:9051
+-e CORE_PEER_ADDRESS=peer0.org2.eapproval.com:9051
 -e CORE_PEER_MSPCONFIGPATH=${ORG2_MSPCONFIGPATH}
 -e CORE_PEER_TLS_ROOTCERT_FILE=${ORG2_TLS_ROOTCERT_FILE}
 cli
@@ -101,7 +101,7 @@ peer
 
 echo
 echo "##############################################################"
-echo "####### PACKAGING CHAINCODE ON peer0.org1.example.com ########"
+echo "####### PACKAGING CHAINCODE ON peer0.org1.eapproval.com ########"
 echo "##############################################################"
 ${PEER0_ORG1} lifecycle chaincode package \
 ${CC_NAME}.tar.gz \
@@ -114,7 +114,7 @@ echo
 
 echo
 echo "##############################################################"
-echo "####### INSTALLING CHAINCODE ON peer0.org1.example.com #######"
+echo "####### INSTALLING CHAINCODE ON peer0.org1.eapproval.com #######"
 echo "##############################################################"
 ${PEER0_ORG1} lifecycle chaincode install \
 ${CC_NAME}.tar.gz
@@ -126,7 +126,7 @@ if [[ `${PEER0_ORG1} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
     PACKAGE_ID_ORG1=${CC_LABLE}:${BASH_REMATCH[1]}
     echo $PACKAGE_ID_ORG1
 else
-    echo Could not find package ID for ${CC_LABLE} chaincode on peer0.org1.example.com
+    echo Could not find package ID for ${CC_LABLE} chaincode on peer0.org1.eapproval.com
     exit 1
 fi
 
@@ -149,7 +149,7 @@ echo
 
 echo
 echo "##############################################################"
-echo "####### PACKAGING CHAINCODE ON peer0.org2.example.com ########"
+echo "####### PACKAGING CHAINCODE ON peer0.org2.eapproval.com ########"
 echo "##############################################################"
 ${PEER0_ORG2} lifecycle chaincode package \
 ${CC_NAME}.tar.gz \
@@ -162,7 +162,7 @@ echo
 
 echo
 echo "##############################################################"
-echo "####### INSTALLING CHAINCODE ON peer0.org2.example.com #######"
+echo "####### INSTALLING CHAINCODE ON peer0.org2.eapproval.com #######"
 echo "##############################################################"
 ${PEER0_ORG2} lifecycle chaincode install ${CC_NAME}.tar.gz
 checkResult
@@ -173,7 +173,7 @@ if [[ `${PEER0_ORG2} lifecycle chaincode queryinstalled` =~ $REGEX ]]; then
     PACKAGE_ID_ORG2=${CC_LABLE}:${BASH_REMATCH[1]}
     echo $PACKAGE_ID_ORG2
 else
-    echo Could not find package ID for ${CC_LABLE} chaincode on peer0.org2.example.com
+    echo Could not find package ID for ${CC_LABLE} chaincode on peer0.org2.eapproval.com
     exit 1
 fi
 
@@ -205,8 +205,8 @@ ${PEER0_ORG1} lifecycle chaincode commit \
 --signature-policy "AND('Org1MSP.member','Org2MSP.member')" \
 --sequence ${CC_SEQUENCE} \
 --waitForEvent \
---peerAddresses peer0.org1.example.com:7051 \
---peerAddresses peer0.org2.example.com:9051 \
+--peerAddresses peer0.org1.eapproval.com:7051 \
+--peerAddresses peer0.org2.eapproval.com:9051 \
 --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
 --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
 checkResult
@@ -223,8 +223,8 @@ ${PEER0_ORG1} chaincode invoke \
 -c '{"function":"initLedger","Args":[]}' \
 --waitForEvent \
 --waitForEventTimeout 300s \
---peerAddresses peer0.org1.example.com:7051 \
---peerAddresses peer0.org2.example.com:9051 \
+--peerAddresses peer0.org1.eapproval.com:7051 \
+--peerAddresses peer0.org2.eapproval.com:9051 \
 --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE} \
 --tlsRootCertFiles ${ORG2_TLS_ROOTCERT_FILE}
 checkResult
@@ -239,7 +239,7 @@ ${PEER0_ORG1} chaincode query \
 -C mychannel \
 -n ${CC_NAME} \
 -c '{"function":"getTotalRequests","Args":[]}' \
---peerAddresses peer0.org1.example.com:7051 \
+--peerAddresses peer0.org1.eapproval.com:7051 \
 --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
 checkResult
 echo

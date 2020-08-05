@@ -23,7 +23,7 @@
 	"channels": {
 		"mychannel": {
 			"peers": {
-				"peer0.org1.example.com": {}
+				"peer0.org1.eapproval.com": {}
 			},
 			"connection": {
 				"timeout": {
@@ -40,49 +40,49 @@
 		"Org1MSP": {
 			"mspid": "Org1MSP",
 			"adminPrivateKey": {
-				"path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk"
+				"path": "/tmp/crypto/peerOrganizations/org1.eapproval.com/users/Admin@org1.eapproval.com/msp/keystore/priv_sk"
 			},
 			"signedCert": {
-				"path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem"
+				"path": "/tmp/crypto/peerOrganizations/org1.eapproval.com/users/Admin@org1.eapproval.com/msp/signcerts/Admin@org1.eapproval.com-cert.pem"
 			},
-			"peers": ["peer0.org1.example.com"]
+			"peers": ["peer0.org1.eapproval.com"]
 		},
 		"Org2MSP": {
 			"mspid": "Org2MSP",
 			"adminPrivateKey": {
-			  "path": "/tmp/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/priv_sk"
+			  "path": "/tmp/crypto/peerOrganizations/org2.eapproval.com/users/Admin@org2.eapproval.com/msp/keystore/priv_sk"
 			},
 			"signedCert": {
-				"path": "/tmp/crypto/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem"
+				"path": "/tmp/crypto/peerOrganizations/org2.eapproval.com/users/Admin@org2.eapproval.com/msp/signcerts/Admin@org2.eapproval.com-cert.pem"
 			},
-			"peers": ["peer0.org2.example.com"]
+			"peers": ["peer0.org2.eapproval.com"]
 		},
 		"OrdererMSP": {
 			"mspid": "OrdererMSP",
 			"adminPrivateKey": {
-			  "path": "/tmp/crypto/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore/priv_sk"
+			  "path": "/tmp/crypto/ordererOrganizations/eapproval.com/users/Admin@eapproval.com/msp/keystore/priv_sk"
 			}
 		}
 	},
 	"peers": {
-		"peer0.org1.example.com": {
+		"peer0.org1.eapproval.com": {
 			"tlsCACerts": {
-				"path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
+				"path": "/tmp/crypto/peerOrganizations/org1.eapproval.com/peers/peer0.org1.eapproval.com/tls/ca.crt"
 			},
-			"url": "grpcs://peer0.org1.example.com:7051",
-			"eventUrl": "grpcs://peer0.org1.example.com:7053",
+			"url": "grpcs://peer0.org1.eapproval.com:7051",
+			"eventUrl": "grpcs://peer0.org1.eapproval.com:7053",
 			"grpcOptions": {
-				"ssl-target-name-override": "peer0.org1.example.com"
+				"ssl-target-name-override": "peer0.org1.eapproval.com"
 			}
 		}, 
-		"peer0.org2.example.com": {
+		"peer0.org2.eapproval.com": {
 			"tlsCACerts": {
-				"path": "/tmp/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt"
+				"path": "/tmp/crypto/peerOrganizations/org2.eapproval.com/peers/peer0.org2.eapproval.com/tls/ca.crt"
 			},
-			"url": "grpcs://peer0.org2.example.com:9051",
-			"eventUrl": "grpcs://peer0.org2.example.com:9053",
+			"url": "grpcs://peer0.org2.eapproval.com:9051",
+			"eventUrl": "grpcs://peer0.org2.eapproval.com:9053",
 			"grpcOptions": {
-				"ssl-target-name-override": "peer0.org2.example.com"
+				"ssl-target-name-override": "peer0.org2.eapproval.com"
 			}
 		}
 	}

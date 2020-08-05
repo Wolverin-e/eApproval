@@ -4,7 +4,7 @@
             "name": "eApproval",
 			"profile": "./ccp/hyperledger-explorer-ccp.json",
 			"adminPrivateKey": {
-				"path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk"
+				"path": "/tmp/crypto/peerOrganizations/org1.eapproval.com/users/Admin@org1.eapproval.com/msp/keystore/priv_sk"
 			}
         }
     },

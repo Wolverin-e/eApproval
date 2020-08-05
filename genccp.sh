@@ -18,15 +18,15 @@ function json_ccp {
 ORG=1
 P0PORT=7051
 CAPORT=7054
-PEERPEM=configs/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-CAPEM=configs/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
+PEERPEM=configs/crypto-config/peerOrganizations/org1.eapproval.com/tlsca/tlsca.org1.eapproval.com-cert.pem
+CAPEM=configs/crypto-config/peerOrganizations/org1.eapproval.com/ca/ca.org1.eapproval.com-cert.pem
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > configs/ccp/connection-org1.json
 
 ORG=2
 P0PORT=9051
 CAPORT=9054
-PEERPEM=configs/crypto-config/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
-CAPEM=configs/crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem
+PEERPEM=configs/crypto-config/peerOrganizations/org2.eapproval.com/tlsca/tlsca.org2.eapproval.com-cert.pem
+CAPEM=configs/crypto-config/peerOrganizations/org2.eapproval.com/ca/ca.org2.eapproval.com-cert.pem
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > configs/ccp/connection-org2.json

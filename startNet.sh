@@ -162,9 +162,9 @@ function networkUp(){
 
     if [ "${NO_CA}" != "true" ]; then
         DOCKER_COMPOSE_FILES="${DOCKER_COMPOSE_FILES} -f ${DOCKER_COMPOSE_CA}"
-        export EAPPROVAL_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
+        export EAPPROVAL_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.eapproval.com/ca && ls *_sk)
         # echo ${EAPPROVAL_CA1_PRIVATE_KEY}
-        export EAPPROVAL_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+        export EAPPROVAL_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.eapproval.com/ca && ls *_sk)
         # echo ${EAPPROVAL_CA2_PRIVATE_KEY}
     fi
 
@@ -191,8 +191,8 @@ function networkUp(){
 # FUNCTION TO STOP AND REMOVE THE CONTAINERS
 function networkDown(){
 
-    export EAPPROVAL_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.example.com/ca && ls *_sk)
-    export EAPPROVAL_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.example.com/ca && ls *_sk)
+    export EAPPROVAL_CA1_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org1.eapproval.com/ca && ls *_sk)
+    export EAPPROVAL_CA2_PRIVATE_KEY=$(cd configs/crypto-config/peerOrganizations/org2.eapproval.com/ca && ls *_sk)
     DOCKER_COMPOSE_FILES="${DOCKER_COMPOSE_FILES} -f ${DOCKER_COMPOSE_CA}"
     
     echo

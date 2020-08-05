@@ -9,7 +9,7 @@ async function register(username, org) {
         const ccp = getCCP(org);
 
         // Create a new CA client for interacting with the CA.
-        const caURL = ccp.certificateAuthorities['ca.'+org+'.example.com'].url;
+        const caURL = ccp.certificateAuthorities['ca.'+org+'.eapproval.com'].url;
         const ca = new FabricCAServices(caURL);
 
         // Create a new file system based wallet for managing identities.

@@ -10,7 +10,7 @@ async function main() {
         const ccp = getCCP(process.env.ORG);
 
         // Create a new CA client for interacting with the CA.
-        const caInfo = ccp.certificateAuthorities['ca.'+process.env.ORG+'.example.com'];
+        const caInfo = ccp.certificateAuthorities['ca.'+process.env.ORG+'.eapproval.com'];
         const caTLSCACerts = caInfo.tlsCACerts.pem;
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
