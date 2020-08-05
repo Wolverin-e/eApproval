@@ -1,5 +1,5 @@
 {
-  "name": "eprocurement",
+  "name": "eapproval",
   "version": "1.0.0",
   "description": "chaincode",
   "main": "index.js",

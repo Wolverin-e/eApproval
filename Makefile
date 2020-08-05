@@ -12,10 +12,10 @@ default:
 	make start-apis
 
 build-images:
-	docker build -t eprocurement/api:1.0 ./api
+	docker build -t eapproval/api:1.0 ./api
 
 rm-images:
-	docker rmi eprocurement/api:1.0
+	docker rmi eapproval/api:1.0
 
 start-apis:
 	docker-compose -f api/docker-compose-api.yaml up -d

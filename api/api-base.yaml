@@ -2,7 +2,7 @@ version: '2'
 
 services:
   api-base:
-    image: eprocurement/api:1.0
+    image: eapproval/api:1.0
     environment:
       - MODE=production
     volumes:

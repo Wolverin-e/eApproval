@@ -1,7 +1,7 @@
 version: '2'
 
 networks:
-  eProcurement:
+  eApproval:
 
 services:
   couchdb0:
@@ -13,7 +13,7 @@ services:
     ports:
       - "5984:5984"
     networks:
-      - eProcurement
+      - eApproval
 
   peer0.org1.example.com:
     environment:
@@ -33,7 +33,7 @@ services:
     ports:
       - "7984:5984"
     networks:
-      - eProcurement
+      - eApproval
 
   peer0.org2.example.com:
     environment:

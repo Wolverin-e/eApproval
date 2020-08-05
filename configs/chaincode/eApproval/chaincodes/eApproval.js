@@ -7,10 +7,10 @@ const createCompositeKey = (parentKey, childrenKeys) => {
     return parentKey+'|'+childrenKeys.join('|')
 }
 
-class eProcurement extends Contract {
+class eApproval extends Contract {
 
     constructor() {
-        super("com.gov.eProcurement.approval");
+        super("com.gov.eApproval.approval");
     }
 
     async initLedger(ctx) {
@@ -148,4 +148,4 @@ class eProcurement extends Contract {
     }
 }
 
-module.exports = eProcurement;
+module.exports = eApproval;

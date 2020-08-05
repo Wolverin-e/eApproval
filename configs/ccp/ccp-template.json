@@ -1,5 +1,5 @@
 {
-    "name": "eProcurement-network-org${ORG}",
+    "name": "eApproval-network-org${ORG}",
     "version": "1.0.0",
     "client": {
         "organization": "Org${ORG}",

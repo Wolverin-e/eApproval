@@ -48,9 +48,8 @@ class createRequest extends React.Component {
       }
     }).then(response => {
       if (response.status >= 200 && response.status < 300) {
-        console.log(response);
+        window.location.reload();
         return response;
-        // window.location.reload();
       } else {
         console.log('Somthing happened wrong');
       }
@@ -73,7 +72,7 @@ class createRequest extends React.Component {
           <label htmlFor="ORG1"> ORG1</label><br/>
           <input type="checkbox" id="ORG2" name="ORG2" value="ORG2" onChange={this.onChange}/>
           <label htmlFor="ORG2"> ORG2</label><br/><br/>
-          <input type="submit" onClick={this.handleSubmit}/>
+          <input type="button" value="create" onClick={this.handleSubmit}/>
         </form>
       </div>
     )

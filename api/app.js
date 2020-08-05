@@ -53,7 +53,7 @@ const contract_query = async (user, ...query) => {
         }
     });
     const network = await gateway.getNetwork('mychannel');
-    const contract = network.getContract('eprocurement');
+    const contract = network.getContract('eapproval');
     const result  = await contract.evaluateTransaction(...query);
 
     return result;
@@ -70,7 +70,7 @@ const contract_invoke = async (user, ...query) => {
         }
     });
     const network = await gateway.getNetwork('mychannel');
-    const contract = network.getContract('eprocurement');
+    const contract = network.getContract('eapproval');
     const result  = await contract.submitTransaction(...query);
 
     return result;

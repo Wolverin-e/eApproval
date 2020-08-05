@@ -1,12 +1,12 @@
-# eProcurement
-B.Tech Project On eProcurement using Blockchain - Hyperledger Fabric.
+# eApproval
+B.Tech Project On eApproval using Blockchain - Hyperledger Fabric.
 
 ## Installation
 
 - Clone the move in the repo
 
     ```
-     git clone <link> | cd <project_directory_name>  # eProcurement
+     git clone <link> | cd <project_directory_name>  # eApproval
     ```
 - Download all the [prerequisite](https://hyperledger-fabric.readthedocs.io/en/release-2.0/prereqs.html) 
   NOTE: install node v10 insted of v8, when given option

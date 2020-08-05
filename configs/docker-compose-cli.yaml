@@ -6,7 +6,7 @@ volumes:
   peer0.org2.example.com:
 
 networks:
-  eProcurement:
+  eApproval:
 
 services:
 
@@ -16,7 +16,7 @@ services:
       service: orderer.example.com
     container_name: orderer.example.com
     networks:
-      - eProcurement
+      - eApproval
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
@@ -24,7 +24,7 @@ services:
       file:  base/docker-compose-base.yaml
       service: peer0.org1.example.com
     networks:
-      - eProcurement
+      - eApproval
 
   peer0.org2.example.com:
     container_name: peer0.org2.example.com
@@ -32,7 +32,7 @@ services:
       file:  base/docker-compose-base.yaml
       service: peer0.org2.example.com
     networks:
-      - eProcurement
+      - eApproval
 
   cli:
     container_name: cli
@@ -65,4 +65,4 @@ services:
       - peer0.org1.example.com
       - peer0.org2.example.com
     networks:
-      - eProcurement
+      - eApproval
