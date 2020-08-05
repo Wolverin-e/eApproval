@@ -21,11 +21,11 @@ rm-app-images:
 
 start-app-containers:
 	docker-compose -f api/docker-compose-api.yaml up -d
-	docker run --name eui -d -p 3000:3000 eapproval/ui:1.0
+	docker run --name eapproval_ui -d -p 3000:3000 eapproval/ui:1.0
 
 stop-app-containers:
 	docker-compose -f api/docker-compose-api.yaml down
-	docker rm -f eui
+	docker rm -f eapproval_ui
 
 start-network:
 	./startNet.sh up
