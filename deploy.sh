@@ -8,9 +8,10 @@ function printhelp(){
   
   echo 
   echo "Usage:"
-  echo "  deploy.sh [-a] [-h] [-n] [-i] [-c] [-p]"
+  echo "  deploy.sh [-a] [-h] [-n] [-i] [-c] [-p] [-e]"
   echo "  -a - DO INITIAL SETUP AND INSTALL CHAINCODE"
   echo "  -n - NO CHAINCODE INSTALLATION"
+  echo "  -e - START EXPLORER"
   echo "  -c - CHAINCODE ONLY"
   echo "  -i - IGNORE ERRORS"
   echo "  -p - POPULATE DB"
@@ -45,9 +46,10 @@ CHAIN_CODE_ONLY=true
 NO_CHAINCODE=true
 IGNORE_ERRORS=false
 POPULATE_DB=true
+START_EXPLORER=false
 
 
-while getopts "h?ncaip" opt; do
+while getopts "h?ncaipe" opt; do
   case "$opt" in
   h | \?)
     printhelp
@@ -69,6 +71,9 @@ while getopts "h?ncaip" opt; do
     ;;
   p)
     POPULATE_DB=true
+    ;;
+  e)
+    START_EXPLORER=true
     ;;
   esac
 done
@@ -414,4 +419,18 @@ if [ "${POPULATE_DB}" == "true" ]; then
     --tlsRootCertFiles ${ORG1_TLS_ROOTCERT_FILE}
   checkResult
   echo
+fi
+
+if [ "${START_EXPLORER}" != "false" ]; then
+  pushd ./configs >> /dev/null
+  echo
+  echo "#######################################"
+  echo "####### Starting The EXPLORER #########"
+  echo "#######################################"
+
+  docker-compose \
+  -f docker-compose-explorer.yaml \
+  up -d
+
+  checkResult
 fi

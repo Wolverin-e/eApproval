@@ -25,7 +25,7 @@ stop-apis:
 
 start:
 	./startNet.sh up
-	./deploy.sh -ap
+	./deploy.sh -ape
 
 upgrade:
 	./upgrade.sh
@@ -33,4 +33,4 @@ upgrade:
 stop:
 	./startNet.sh down
 	make stop-apis
-	# make rm-images
+	docker-compose -f configs/docker-compose-explorer.yaml down --volumes --remove-orphans
