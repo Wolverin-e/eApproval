@@ -1,5 +1,6 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
+import { saveAs } from 'file-saver'
 
 
 class createRequest extends React.Component {
@@ -7,13 +8,16 @@ class createRequest extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-        from_user: '',
-        title: '',
-        descriptions: '',
-        requestedDepartments: ""
-      }
-    this.onChange = this.onChange.bind(this)
+      from_user: '',
+      title: '',
+      descriptions: '',
+      requestedDepartments: "",
+    }
+    this.onChange = this.onChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    
+    this.fileInput = React.createRef();
+    this.handleFileUpload = this.handleFileUpload.bind(this);
   }
 
   onChange(e) {
@@ -56,6 +60,18 @@ class createRequest extends React.Component {
     }).catch(err => err);
   }
 
+  async handleFileUpload(){
+    console.log(this.fileInput.current.files[0]);
+    var reader = new FileReader();
+    reader.onload = evt => {
+      console.log(evt.target.result);
+      fetch(evt.target.result).then(async res => {
+        saveAs(await res.blob(), this.fileInput.current.files[0].name);
+      });
+    }
+    reader.readAsDataURL(this.fileInput.current.files[0]);
+  }
+
   render() {
 
     return (
@@ -73,6 +89,10 @@ class createRequest extends React.Component {
           <input type="checkbox" id="ORG2" name="ORG2" value="ORG2" onChange={this.onChange}/>
           <label htmlFor="ORG2"> ORG2</label><br/><br/>
           <input type="button" value="create" onClick={this.handleSubmit}/>
+          
+          <br/><br/>
+          <input type="file" ref={this.fileInput} />
+          <input type="button" value="fileUp" onClick={this.handleFileUpload}/>
         </form>
       </div>
     )

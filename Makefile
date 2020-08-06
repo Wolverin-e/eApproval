@@ -13,19 +13,19 @@ default:
 
 build-app-images:
 	docker build -t eapproval/api:1.0 ./api
-	docker build -t eapproval/ui:1.0 ./ui/client
+	# docker build -t eapproval/ui:1.0 ./ui/client
 
 rm-app-images:
 	docker rmi eapproval/api:1.0
-	docker rmi eapproval/ui:1.0
+	# docker rmi eapproval/ui:1.0
 
 start-app-containers:
 	docker-compose -f api/docker-compose-api.yaml up -d
-	docker run --name eapproval_ui -d -p 3000:3000 eapproval/ui:1.0
+	# docker run --name eapproval_ui -d -p 3000:3000 eapproval/ui:1.0
 
 stop-app-containers:
 	docker-compose -f api/docker-compose-api.yaml down
-	docker rm -f eapproval_ui
+	# docker rm -f eapproval_ui
 
 start-network:
 	./startNet.sh up
