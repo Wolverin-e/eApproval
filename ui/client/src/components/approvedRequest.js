@@ -10,16 +10,8 @@ class ApprovedRequest extends React.Component {
     fetch('http://127.0.0.1:8000/api/approvedRequests')
     .then(res => res.json())
     .then( (res) => {
-      res = res.response
-      var a = JSON.parse(res)
-      a = a.map(arg =>{
-        let temp = JSON.parse(arg.Val)
-        return {Key: arg.Key, Val: temp}
-      } )
-      console.log(a)
-      return a
-    }
-    )
+      return JSON.parse(res.response)
+    })
     .then((a) => {
       this.setState({data: a})
     })

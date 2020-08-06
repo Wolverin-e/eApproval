@@ -8,7 +8,10 @@ class Request {
         this.status = '';
         this.approvals = {};
         this.requestedDepartments = [];
+        
         this.privateDataSet = {};
+        this.user_proposal = {}; // Manually defined File obj
+        this.remarks = {};
     }
 
     static from(bufferOrJson){
@@ -28,6 +31,8 @@ class Request {
         request.approvals = bufferOrJson.approvals;
         request.status = bufferOrJson.status;
         request.privateDataSet = bufferOrJson.privateDataSet;
+        request.user_proposal = bufferOrJson.user_proposal;
+        request.remarks = bufferOrJson.remarks;
         
         return request;
     }
@@ -43,8 +48,7 @@ class Request {
     constructApprovals() {
         this.requestedDepartments.map( dept => {
             this.approvals[dept] = {
-                "status": "PENDING", 
-                "remarks": ""
+                "status": "PENDING"
             }
         });
     }
@@ -71,16 +75,16 @@ class Request {
         this.status = this.getOverallStatus();
     }
 
-    approveFor(department, remarks, pvtRemarks={}){
+    approveFor(department, remarks={}, pvtRemarks={}){
         this.approvals[department].status = "APPROVED";
-        this.approvals[department].remarks = remarks;
+        this.remarks[department] = remarks;
         this.privateDataSet[department] = pvtRemarks;
         this.updateOverallStatus();
     }
     
-    declineFor(department, remarks, pvtRemarks={}){
+    declineFor(department, remarks={}, pvtRemarks={}){
         this.approvals[department].status = "DECLINED";
-        this.approvals[department].remarks = remarks;
+        this.remarks[department] = remarks;
         this.privateDataSet[department] = pvtRemarks;
         this.updateOverallStatus();
     }

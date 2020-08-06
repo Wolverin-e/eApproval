@@ -3,8 +3,8 @@
 const { Contract } = require('fabric-contract-api');
 const Request = require("./request");
 
-const createCompositeKey = (parentKey, childrenKeys) => {
-    return parentKey+'|'+childrenKeys.join('|')
+const createCompositeKey = keys => {
+    return keys.join('|');
 }
 
 class eApproval extends Contract {
@@ -15,73 +15,71 @@ class eApproval extends Contract {
 
     async initLedger(ctx) {
         // Function to init
-        let key = createCompositeKey("total", ["Requests"]);
+        let key = createCompositeKey(["total", "Requests"]);
         await ctx.stub.putState(key, Buffer.from(JSON.stringify(0)));
     }
     
     async getTotalRequests(ctx) {
-        let key = createCompositeKey("total", ["Requests"]);
+        let key = createCompositeKey(["total", "Requests"]);
         let count = await ctx.stub.getState(key);
         return JSON.parse(count);
     }
 
     async incrementTotalRequests(ctx) {
-        let key = createCompositeKey("total", ["Requests"]);
+        let key = createCompositeKey(["total", "Requests"]);
         let count = await this.getTotalRequests(ctx);
         ++count;
         await ctx.stub.putState(key, Buffer.from(JSON.stringify(count)));
         return count;
     }
 
-    async createRequest(ctx, from_user, title, description, requestedDepartments) {
+    async createRequest(ctx, from_user, title, description, user_proposal, requestedDepartments) {
         const req = new Request();
         
         req.from_user = from_user;
         req.title = title;
         req.description = description;
-        req.requestedDepartments = requestedDepartments.split(' ');
+        req.user_proposal = JSON.parse(user_proposal);
+        req.requestedDepartments = requestedDepartments.split(" "); //better send as a stringified list
         req.constructApprovals();
         req.updateOverallStatus();
         
         const count = await this.incrementTotalRequests(ctx);
-        let key = createCompositeKey('PENDING', ['Request', `${count}`]);
+        let key = createCompositeKey(['PENDING', 'Request', `${count}`]);
         await ctx.stub.putState(key, req.toBuffer());
     }
 
     async approveRequest(ctx, req_key, department, remarks, pvtRemarks) {
-        req_key = req_key.split(" ")
-        let key = createCompositeKey(req_key[0], req_key.slice(1));
-        let req = await ctx.stub.getState(key);
+        // req_key in format PENDING|Request|1
+        let req = await ctx.stub.getState(req_key);
 
         req = Request.from(req);
-        req.approveFor(department, remarks, JSON.parse(pvtRemarks?pvtRemarks:'{}'));
+        req.approveFor(department, JSON.parse(remarks?remarks:'{}'), JSON.parse(pvtRemarks?pvtRemarks:'{}'));
 
         let new_key;
         if(req.status === "APPROVED"){
-            await ctx.stub.deleteState(key);
-            new_key = createCompositeKey(req.status, req_key.slice(1));
+            await ctx.stub.deleteState(req_key);
+            new_key = createCompositeKey([req.status].concat(req_key.split("|").slice(1)));
         } else {
-            new_key = key;
+            new_key = req_key;
         }
         await ctx.stub.putState(new_key, req.toBuffer());
     }
     
     async declineRequest(ctx, req_key, department, remarks, pvtRemarks) {
-        req_key = req_key.split(" ")
-        let key = createCompositeKey(req_key[0], req_key.slice(1));
-        let req = await ctx.stub.getState(key);
+        // req_key in format PENDING|Request|1
+        let req = await ctx.stub.getState(req_key);
         
         req = Request.from(req);
-        req.declineFor(department, remarks, JSON.parse(pvtRemarks?pvtRemarks:'{}'));
+        req.declineFor(department, JSON.parse(remarks?remarks:'{}'), JSON.parse(pvtRemarks?pvtRemarks:'{}'));
 
-        let new_key = createCompositeKey("DECLINED", req_key.slice(1));
-        await ctx.stub.deleteState(key);
+        let new_key = createCompositeKey(["DECLINED"].concat(req_key.split("|").slice(1)));
+        await ctx.stub.deleteState(req_key);
         await ctx.stub.putState(new_key, req.toBuffer());
     }
 
     async getValueForKey(ctx, req_key) {
-        req_key = req_key.split(" ")
-        req_key = createCompositeKey(req_key[0], req_key.slice(1));
+        // req_key in format PENDING|Request|1
         let user_org = await ctx.clientIdentity.getAttributeValue('org');
         let val = await ctx.stub.getState(req_key);
         let request = Request.from(val);
@@ -99,7 +97,8 @@ class eApproval extends Contract {
     }
 
     async getValuesForPartialKey(ctx, req_partial_key) {
-        req_partial_key = req_partial_key.split(" ");
+        // req_partial_key should be sent in JSON ["PENDING", "Request"]
+        req_partial_key = JSON.parse(req_partial_key);
         let user_org = await ctx.clientIdentity.getAttributeValue('org');
         let query = JSON.stringify({
             "selector": {
@@ -117,8 +116,8 @@ class eApproval extends Contract {
                 }
             }
             results.push({
-                Key: key.split("|"),
-                Val: request.toJson()
+                Key: key,
+                Val: request // Removed .toJson()
             });
         }
         return JSON.stringify(results);
@@ -134,9 +133,9 @@ class eApproval extends Contract {
                     delete request.privateDataSet[k];
                 }
             }
-            results[key.split("|").join(' ')] = request.toJson();
+            results[key] = request; // Removed .toJson()
         }
-        return results;
+        return JSON.stringify(results); // added stringify
     }
 
     async returnMe(ctx, custom){

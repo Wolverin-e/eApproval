@@ -22,32 +22,44 @@ class PendingRequest extends React.Component {
   }
 
   onChange(e) {
-      if (e.target.id === 'Public_Remarks') {
-          this.setState({ request: {...this.state.request, remarks: e.target.value.toString()} });
-      } else if (e.target.id === 'Private_Request_text') {
-          this.setState({ request: {...this.state.request, pvtRemarks: {...this.state.request.pvtRemarks,text:e.target.value.toString() }} });
-      }
+    if (e.target.id === 'Public_Remarks') {
+      this.setState({ 
+        request: {
+          ...this.state.request, 
+          remarks: e.target.value.toString()
+        }
+      });
+    } else if (e.target.id === 'Private_Request_text') {
+      this.setState({
+        request: {
+          ...this.state.request, 
+          pvtRemarks: {
+            ...this.state.request.pvtRemarks,
+            text:e.target.value.toString() 
+          }
+        } 
+      });
     }
+  }
 
   handleAccept(e) {
-
     let request = {...this.state.request, req_key:e.target.id}
     console.log(e.target.id)
     console.log(request)
     fetch('http://127.0.0.1:8000/api/approve', {
-        method: 'POST',
-        body: JSON.stringify(request),
-        headers: {
-            'Content-Type': 'application/json'
-        }
+      method: 'POST',
+      body: JSON.stringify(request),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     }).then(response =>  {
       if (response.status >= 200 && response.status < 300) {
         console.log(response.json());
         window.location.reload();
         return response;
-          } else {
-           console.log('Somthing happened wrong');
-          }
+      } else {
+        console.log('Somthing happened wrong');
+      }
     }).catch(err => err);
   }
 
@@ -55,19 +67,19 @@ class PendingRequest extends React.Component {
     let request = {...this.state.request, req_key:e.target.id}
     console.log("HandleDecline Iniciated")
     fetch('http://127.0.0.1:8000/api/decline', {
-        method: 'POST',
-        body: JSON.stringify(request),
-        headers: {
-            'Content-Type': 'application/json'
-        }
+      method: 'POST',
+      body: JSON.stringify(request),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     }).then(response => {
-        if (response.status >= 200 && response.status < 300) {
-            console.log(response);
-            window.location.reload();
-            return response;
-          } else {
-           console.log('Somthing happened wrong');
-          }
+      if (response.status >= 200 && response.status < 300) {
+        // console.log(response);
+        window.location.reload();
+        return response;
+      } else {
+        console.log('Somthing happened wrong');
+      }
     }).catch(err => err);
   }
 
@@ -75,16 +87,9 @@ class PendingRequest extends React.Component {
     fetch('http://127.0.0.1:'+(this.props.department==="ORG1"?"8000":"8001")+'/api/pendingRequests')
     .then(res => res.json())
     .then( (res) => {
-      res = res.response
-      var a = JSON.parse(res)
-      a = a.map(arg =>{
-        let temp = JSON.parse(arg.Val)
-        return {Key: arg.Key, Val: temp}
-      } )
-      // console.log(a)
-      return a
-    }
-    )
+      console.log(JSON.parse(res.response));
+      return JSON.parse(res.response);
+    })
     .then((a) => {
       this.setState({data: a})
     })
@@ -124,8 +129,6 @@ class PendingRequest extends React.Component {
 
 
 const PendingRequestObj = (props) => {
-  // let req_key = props.Key.reduce( (prev, curr) => prev + " " + curr)
-  // console.log(req_key)
   return (
   <React.Fragment>
     <tr>
@@ -140,9 +143,9 @@ const PendingRequestObj = (props) => {
       <td data-th="Request By">{props.Val.from_user}</td>
       <td data-th="Public Remarks">
         {
-          props.Val.approvals[props.department].remarks?
-            props.Val.approvals[props.department].remarks:
-            <input type="textfield" id="Public_Remarks" name="Public Remarks_text" onChange={props.onChange} />
+          props.Val.remarks[props.department]?
+            props.Val.remarks[props.department].text:
+            <input type="textfield" id="Public_Remarks" name="Public_Remarks_text" onChange={props.onChange} />
         }
       </td>
       <td data-th="Private Remarks">
@@ -153,8 +156,8 @@ const PendingRequestObj = (props) => {
         }
       </td>
       <td>
-        <button id={props.Key.reduce( (prev, curr) => prev + " " + curr).toString()} onClick={props.handleAccept}>Approve</button>
-        <button id={props.Key.reduce( (prev, curr) => prev + " " + curr)} onClick={props.handleDecline}>Decline</button>
+        <button id={props.Key} onClick={props.handleAccept}>Approve</button>
+        <button id={props.Key} onClick={props.handleDecline}>Decline</button>
       </td>
     </tr>
   </React.Fragment>

@@ -7,7 +7,7 @@ endif
 export HOST_IP
 
 default:
-	make start
+	make start-network
 	make build-app-images
 	make start-app-containers
 

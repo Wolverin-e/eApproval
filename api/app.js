@@ -11,7 +11,7 @@ User.dbname='./users.db';
 
 /////////////////////////// API
 const app = express();
-app.use(express.json());
+app.use(express.json({limit: '200mb'}));
 app.use(cors())
 
 /////////////////////////// DB
@@ -135,7 +135,7 @@ app.use((req, res, next) => {
 })
 
 app.get("/api/pendingRequests", async (req, res) => {
-    const pending_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', 'PENDING Request');
+    const pending_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', '["PENDING", "Request"]');
     res.send({
         success: true, 
         response: pending_requests.toString()
@@ -143,7 +143,7 @@ app.get("/api/pendingRequests", async (req, res) => {
 })
 
 app.get("/api/approvedRequests", async (req, res) => {
-    const approved_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', 'APPROVED Request');
+    const approved_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', '["APPROVED", "Request"]');
     res.send({
         success: true, 
         response: approved_requests.toString()
@@ -151,7 +151,7 @@ app.get("/api/approvedRequests", async (req, res) => {
 })
 
 app.get("/api/declinedRequests", async (req, res) => {
-    const declined_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', 'DECLINED Request');
+    const declined_requests = await contract_query(req.headers.user, 'getValuesForPartialKey', '["DECLINED", "Request"]');
     res.send({
         success: true, 
         response: declined_requests.toString()
@@ -162,8 +162,9 @@ app.post("/api/createRequest", async (req, res) => {
     const from_user = req.body.from_user;
     const title = req.body.title;
     const descriptions = req.body.descriptions;
+    const user_proposal = req.body.user_proposal;
     const requestedDepartments = req.body.requestedDepartments;
-    await contract_invoke(req.headers.user, 'createRequest', from_user, title, descriptions, requestedDepartments);
+    await contract_invoke(req.headers.user, 'createRequest', from_user, title, descriptions, JSON.stringify(user_proposal), requestedDepartments);
     res.send({
         success: true
     });
@@ -174,7 +175,7 @@ app.post("/api/approve", async (req, res) => {
     const department = req.body.department;
     const remarks = req.body.remarks;
     const pvtRemarks = req.body.pvtRemarks;
-    await contract_invoke(req.headers.user, 'approveRequest', req_key, department, remarks, JSON.stringify(pvtRemarks?pvtRemarks:'{}'));
+    await contract_invoke(req.headers.user, 'approveRequest', req_key, department, JSON.stringify(remarks?remarks:{}), JSON.stringify(pvtRemarks?pvtRemarks:{}));
     res.send({
         success: true
     });
@@ -185,7 +186,7 @@ app.post("/api/decline", async (req, res) => {
     const department = req.body.department;
     const remarks = req.body.remarks;
     const pvtRemarks = req.body.pvtRemarks;
-    await contract_invoke(req.headers.user, 'declineRequest', req_key, department, remarks, JSON.stringify(pvtRemarks?pvtRemarks:'{}'));
+    await contract_invoke(req.headers.user, 'declineRequest', req_key, department, JSON.stringify(remarks?remarks:{}), JSON.stringify(pvtRemarks?pvtRemarks:{}));
     res.send({
         success: true
     });

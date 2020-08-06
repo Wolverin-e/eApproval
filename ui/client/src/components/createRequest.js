@@ -11,6 +11,7 @@ class createRequest extends React.Component {
       from_user: '',
       title: '',
       descriptions: '',
+      user_proposal: {},
       requestedDepartments: "",
     }
     this.onChange = this.onChange.bind(this);
@@ -43,7 +44,10 @@ class createRequest extends React.Component {
     }
   }
 
-  handleSubmit() {
+  async handleSubmit() {
+    let user_proposal = await this.getFileContentInBase64();
+    this.setState({user_proposal});
+    console.log(this.state, JSON.stringify(this.state))
     fetch('http://127.0.0.1:8000/api/createRequest', {
       method: 'POST',
       body: JSON.stringify(this.state),
@@ -58,6 +62,23 @@ class createRequest extends React.Component {
         console.log('Somthing happened wrong');
       }
     }).catch(err => err);
+  }
+
+  async getFileContentInBase64(){
+    if(this.fileInput.current.files.length){
+      return new Promise((resolve, reject) => {
+        var reader = new FileReader();
+        reader.onload = evt => {
+          resolve({
+            name: this.fileInput.current.files[0].name,
+            data: evt.target.result
+          });
+        }
+        reader.readAsDataURL(this.fileInput.current.files[0]);
+      })
+    } else {
+      return "";
+    }
   }
 
   async handleFileUpload(){
@@ -83,16 +104,14 @@ class createRequest extends React.Component {
           <input type="text" id="title" name="title"  onChange={this.onChange} /><br/><br/>
           <label htmlFor="descriptions">description:</label><br/>
           <input type="textfield" id="descriptions" name="descriptions" onChange={this.onChange} /><br/><br/>
-          <label htmlFor="descriptions">Departments::</label><br/>
+          <label htmlFor="proposal">Proposal:</label><br/>
+          <input type="file" id="proposal" ref={this.fileInput} /><br/><br/>
+          <label htmlFor="descriptions">Departments:</label><br/>
           <input type="checkbox" id="ORG1" name="ORG1" value="ORG1" onChange={this.onChange} />
           <label htmlFor="ORG1"> ORG1</label><br/>
           <input type="checkbox" id="ORG2" name="ORG2" value="ORG2" onChange={this.onChange}/>
           <label htmlFor="ORG2"> ORG2</label><br/><br/>
           <input type="button" value="create" onClick={this.handleSubmit}/>
-          
-          <br/><br/>
-          <input type="file" ref={this.fileInput} />
-          <input type="button" value="fileUp" onClick={this.handleFileUpload}/>
         </form>
       </div>
     )

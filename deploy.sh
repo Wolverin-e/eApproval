@@ -318,7 +318,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Alpha", "Cell Phone Tower", "Tower Outside of Town.", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Alpha", "Cell Phone Tower", "Tower Outside of Town.", "{}", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -331,7 +331,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Beta", "Chemical Factory", "Chemical Factory Inside Town.", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Beta", "Chemical Factory", "Chemical Factory Inside Town.", "{}", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -344,7 +344,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Gamma", "Ice-cream Factory", "Ice-cream Factory inside Town.", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Gamma", "Ice-cream Factory", "Ice-cream Factory inside Town.", "{}", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -357,7 +357,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Delta", "Coal mine", "Coal mine inside Town.", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Delta", "Coal mine", "Coal mine inside Town.", "{}", "ORG1 ORG2"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -370,7 +370,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG1", "Good!", "{}"]}' \
+    -c '{"function":"approveRequest","Args":["PENDING|Request|1", "ORG1", "{}", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -383,7 +383,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"approveRequest","Args":["PENDING Request 1", "ORG2", "Good!", "{}"]}' \
+    -c '{"function":"approveRequest","Args":["PENDING|Request|1", "ORG2", "{}", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -396,7 +396,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"declineRequest","Args":["PENDING Request 2", "ORG1", "Harmful!!", "{}"]}' \
+    -c '{"function":"declineRequest","Args":["PENDING|Request|2", "ORG1", "{}", "{}"]}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
