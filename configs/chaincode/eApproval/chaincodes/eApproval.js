@@ -40,7 +40,7 @@ class eApproval extends Contract {
         req.title = title;
         req.description = description;
         req.user_proposal = JSON.parse(user_proposal);
-        req.requestedDepartments = requestedDepartments.split(" "); //better send as a stringified list
+        req.requestedDepartments = JSON.parse(requestedDepartments); //better send as a stringified list
         req.constructApprovals();
         req.updateOverallStatus();
         

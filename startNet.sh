@@ -178,6 +178,7 @@ function networkUp(){
     up -d
 
     checkResult
+    sleep 5
 
     echo
     echo "#######################################"

@@ -311,6 +311,12 @@ if [ "${NO_CHAINCODE}" != "true" ]; then
 fi
 
 if [ "${POPULATE_DB}" == "true" ]; then
+
+  local_sampleUserProposalFile='"{\"name\":\"report.txt\",\"data\":\"data:text/plain;base64,c2FtcGxlCg==\"}"'
+  local_orgs='"[\"ORG1\",\"ORG2\"]"'
+  local_sampleGoodRemarks='"{\"text\":\"GOOD\",\"file\":{\"data\":\"data:text/plain;base64,c2FtcGxlCg==\",\"name\":\"report.txt\"}}"'
+  local_sampleBadRemarks='"{\"text\":\"BAD\",\"file\":{\"data\":\"data:text/plain;base64,c2FtcGxlCg==\",\"name\":\"report.txt\"}}"'
+
   echo
   echo "#############################################################"
   echo "####### INVOKING POPULATE_DB IN CHAINCODE DEFINITION ########"
@@ -318,7 +324,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Alpha", "Cell Phone Tower", "Tower Outside of Town.", "{}", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Alpha", "Cell Phone Tower", "Tower Outside of Town.", '$local_sampleUserProposalFile','$local_orgs']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -331,7 +337,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Beta", "Chemical Factory", "Chemical Factory Inside Town.", "{}", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Beta", "Chemical Factory", "Chemical Factory Inside Town.", '$local_sampleUserProposalFile', '$local_orgs']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -344,7 +350,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Gamma", "Ice-cream Factory", "Ice-cream Factory inside Town.", "{}", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Gamma", "Ice-cream Factory", "Ice-cream Factory inside Town.", '$local_sampleUserProposalFile', '$local_orgs']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -357,7 +363,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"createRequest","Args":["Delta", "Coal mine", "Coal mine inside Town.", "{}", "ORG1 ORG2"]}' \
+    -c '{"function":"createRequest","Args":["Delta", "Coal mine", "Coal mine inside Town.", '$local_sampleUserProposalFile', '$local_orgs']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -370,7 +376,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"approveRequest","Args":["PENDING|Request|1", "ORG1", "{}", "{}"]}' \
+    -c '{"function":"approveRequest","Args":["PENDING|Request|1", "ORG1", '$local_sampleGoodRemarks', '$local_sampleGoodRemarks']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -383,7 +389,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"approveRequest","Args":["PENDING|Request|1", "ORG2", "{}", "{}"]}' \
+    -c '{"function":"approveRequest","Args":["PENDING|Request|1", "ORG2", '$local_sampleGoodRemarks', '$local_sampleGoodRemarks']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
@@ -396,7 +402,7 @@ if [ "${POPULATE_DB}" == "true" ]; then
   ${PEER0_ORG1} chaincode invoke \
     -C mychannel \
     -n ${CC_NAME} \
-    -c '{"function":"declineRequest","Args":["PENDING|Request|2", "ORG1", "{}", "{}"]}' \
+    -c '{"function":"declineRequest","Args":["PENDING|Request|2", "ORG1", '$local_sampleBadRemarks', '$local_sampleBadRemarks']}' \
     --waitForEvent \
     --waitForEventTimeout 300s \
     --peerAddresses peer0.org1.eapproval.com:7051 \
