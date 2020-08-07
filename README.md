@@ -80,19 +80,19 @@ B.Tech Project On eApproval using Blockchain - Hyperledger Fabric.
 - Both the DB instances in this case is always in a synchronous state.
 - But, if we try to make the states of both the DBs asynchronous by manual changes directly into DB, then while endorsing the Txns via Fabric-SDK on both the peers which involves the changes we made, generates different RW(Read-Write) sets and doesn't get ordered.
 - CouchDB-0
-<p align="center">
-	<img src="documentation/Overall/ManualFailure/couchdb0.png">
-</p>
+	<p align="center">
+		<img src="documentation/Overall/ManualFailure/couchdb0.png">
+	</p>
 
 - CouchDB-1
-<p align="center">
-	<img src="documentation/Overall/ManualFailure/couchdb1.png">
-</p>
+	<p align="center">
+		<img src="documentation/Overall/ManualFailure/couchdb1.png">
+	</p>
 
 - Policy-Failure
-<p align="center">
-	<img src="documentation/Overall/ManualFailure/PolicyFailureErr.png">
-</p>
+	<p align="center">
+		<img src="documentation/Overall/ManualFailure/PolicyFailureErr.png">
+	</p>
 
 # Installation
 
