@@ -12,7 +12,7 @@ class createRequest extends React.Component {
       title: '',
       descriptions: '',
       user_proposal: {},
-      requestedDepartments: "",
+      requestedDepartments: [],
     }
     this.onChange = this.onChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,16 +29,15 @@ class createRequest extends React.Component {
     } else if (e.target.id === 'descriptions') {
       this.setState({ descriptions: e.target.value });
     } else {
-      let a = this.state.requestedDepartments.split(' ');
-      a = a.filter(a => a !== '');
+      let currentlyRequestedDepartments = this.state.requestedDepartments;
       if(e.target.checked){
-        a.push(e.target.name);
+        currentlyRequestedDepartments.push(e.target.name);
         this.setState({
-          requestedDepartments: a.join(' ')
+          requestedDepartments: currentlyRequestedDepartments
         })
       } else {
         this.setState({ 
-          requestedDepartments: a.filter(org => org !== e.target.name).join(' ')
+          requestedDepartments: currentlyRequestedDepartments.filter(org => org !== e.target.name)
         })
       }
     }
@@ -119,6 +118,4 @@ class createRequest extends React.Component {
 }
 
 
-export default createRequest
-
-
+export default createRequest;
