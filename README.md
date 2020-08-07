@@ -1,61 +1,137 @@
+
+
+
 # eApproval
 B.Tech Project On eApproval using Blockchain - Hyperledger Fabric.
 
-## Installation
+ 1. System UseCase Diagram
+ 2. Architecture
+	- 4-Tier App Architecture
+	- Fabric Network
+	- Chaincode
+	- API
+	- UI
+ 3. System Security
+ 4. Installation
 
-- Clone the move in the repo
+# System UseCase Diagram
+- The System supports basic functionalities,
+	- ADD new Request in StateDB.
+	- RETRIEVE Requests stored in StateDB.
+	- APPROVE | DECLINE Request stored in StateDB.
+<p align="center">
+	<img src="documentation/Overall/UseCase-Diagram.png" height="350px">
+</p>
 
+# Architecture
+
+1. ## 4-Tier App Architecture
+	- The System has 4 Layers
+		- UI
+		- API
+		- Chaincode
+		- Data
+<p align="center">
+	<img src="documentation/Overall/Network/Untitled Diagram.png" height="350px">
+</p>
+
+2. ## Fabric Network
+	- The Network has 2 ORGs Each with,
+		- 1 Peer
+		- 1 CA-Peer
+	- An Orderer ORG with 1 Peer
+	- 2 API Containers
+<p align="center">
+	<img src="documentation/Overall/Network/eApproval.png" height="350px">
+</p>
+
+3. ## Chaincode
+	- The Chaincode has the following duties,
+		- Create a Request & Store into StateDB.
+		- Retrieve Request by querying the StateDB.
+		- Approve | Decline a Request Stored in the StateDB.
+<p align="center">
+	<img src="documentation/Overall/class-diagram.png">
+</p>
+
+4. ## API
+	- APIs communicates securely with the chaincode with fabric-node-sdk & also stores the user certificates locally.
+	- Both APIs have Endpoints,
+		- api/pendingRequests
+		- api/approvedRequests
+		- api/declinedRequests
+		- api/createRequest
+		- api/approve
+		- api/decline
+		- api/query
+		- api/invoke
+		- api/runRichQuery
+		- api/login
+		- api/register
+	- Both APIs, Returns ORG specific private data.
+
+5. ## UI
+	- UI triggers the API Endpoints and actuates upon the StateDB via Chaincode.
+	- UI has 4 sections,
+		- Create Request
+		- ORG1 Dashboard
+		- ORG2 Dashboard
+		- Public Board
+
+# System Security
+- The Security is promised via usage of Blockchain.
+- Both the DB instances in this case is always in a synchronous state.
+- But, if we try to make the states of both the DBs asynchronous by manual changes directly into DB, then while endorsing the Txns via Fabric-SDK on both the peers which involves the changes we made, generates different RW(Read-Write) sets and doesn't get ordered.
+- CouchDB-0
+- CouchDB-1
+- Policy-Failure
+
+# Installation
+
+- This Project is supported only on Mac & Ubuntu.
+- Clone the Repo
+
+    ```sh
+    # Don't cd into it
+	$ git clone <link> eApproval
     ```
-     git clone <link> | cd <project_directory_name>  # eApproval
-    ```
-- Download all the [prerequisite](https://hyperledger-fabric.readthedocs.io/en/release-2.0/prereqs.html) 
+- Only Download all the [prerequisite](https://hyperledger-fabric.readthedocs.io/en/release-2.0/prereqs.html) 
   NOTE: install node v10 insted of v8, when given option
-
+- Install Fabric Binaries
+    ```sh
+	$ curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.0.0 1.4.6 0.4.18
+    ```
+    - This Will also clone fabric-samples in the cwd.
+- Copy Fabric Binaries into eApproval
+	```sh
+	$ cp ./fabric-samples/bin ./eApproval/bin
+    ```
 - If you have been playing with Docker, kill any stale or active containers.
 
-  ```
-  docker rm -f $(docker ps -aq)
-  docker rmi -f $(docker images | grep fabcar | awk '{print $3}')
+  ```sh
+  $ docker rm -f $(docker ps -aq)
+  $ docker rmi -f $(docker images | grep fabcar | awk '{print $3}')
   ```
  
- - We need some binary files of hyperleder to start our network. Follow this [guide](https://hyperledger-fabric.readthedocs.io/en/release-2.0/install.html) to install them.
-
 - start the network
   ```
-  ./startNet.sh up
+  $ make
   ```
-  NOTE: If the network is still down, try moving `fabric-samples/bin` folder to `cwd`
-  
- - deploy the chaincode to the network
-  ```
-  ./deploy.sh -a
-  ```
-  
-  Now, lets install the apis
-  
-  - move to `/api` folder
-  ```
-  cd /api
-  ```
-  - install node modules
-  ```
-  npm install
-  ```
-  NOTE: All modules wont be installed without node v10
-  
-  - Enroll the Admin
-  ```
-  node enrollAdmin.js
-  ```
-  This command has stored the CA(Certificate Authority) administrator’s credentials in the `/wallet` directory.
-  
-  - Register and enroll a user
-  ```
-  node registerUser.js
-  ```
-  Users credentials are also stored in `/wallet` directory.
-  
-  - start the api server
-  ```
-  npm start
-  ```
+  - Check [This](https://github.com/Wolverin-e/eProcurement/blob/master/Makefile) for more make commands.
+
+- If manual API starting is required,
+	- Before Starting it, set a host route 127.0.0.1  host.docker.internal
+		```sh
+		# FOR MAC
+		$ sudo nano /private/etc/hosts
+		# add:   127.0.0.1		host.docker.internal
+		
+		# FOR UBUNTU
+		$ sudo nano /etc/hosts
+		# add:   127.0.0.1		host.docker.internal
+		```
+	- Then start
+	  ```
+	  $ cd ./api
+	  $ MODE=production ./entrypoint.sh
+	  ```
