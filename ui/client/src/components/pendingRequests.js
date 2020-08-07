@@ -146,8 +146,7 @@ class PendingRequest extends React.Component {
   render() {
     return (
       <div>
-        <h1>{this.props.department}</h1>
-        <h2>Pending Requests</h2>
+        <h1>{this.props.department}'s Dashboard</h1>
         <table className="rwd-table">
           <thead>
             <tr>
@@ -232,29 +231,47 @@ const PendingRequestObj = (props) => {
           :<React.Fragment>
           <td>-----</td>
           <td>-----</td>
-        </React.Fragment>
+          </React.Fragment>
             }
           </React.Fragment>
         }
         <td data-th="Public Remarks">
           {
+            props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.remarks[props.department].text:
               <input type="textfield" id="Public_Remarks" name="Public_Remarks_text" onChange={props.onChange} />
           }
         </td>
         <td data-th="Public Report">
+          {
+            props.Val.approvals[props.department].status!='PENDING'?
+              <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks[props.department].file.data, props.Val.remarks[props.department].file.name)}>Download</button></td>:
               <input type="file" name="Public_Request_file" id="Public_Request_file" onChange={props.onChange}/>
-        </td>
+            }
+          </td>
         <td data-th="Private Remarks">
           {
+            props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.privateDataSet[props.department].text:
               <input type="textfield" id="Private_Remarks_text" name="Private_Remarks_text" onChange={props.onChange} />
           }
         </td>
         <td data-th="Private Report">
+          {
+            props.Val.approvals[props.department].status!='PENDING'?
+              <td data-th="Public report"><button onClick={() => props.getReport(props.Val.privateDataSet[props.department].file.data, props.Val.privateDataSet[props.department].file.name)}>Download</button></td>:
               <input type="file" name="Private_Remarks_file" id="Private_Remarks_file" onChange={props.onChange}/>
+
+          }
         </td>
         <td>
-          <button id={props.Key} onClick={props.handleAccept}>Approve</button>
-          <button id={props.Key} onClick={props.handleDecline}>Decline</button>
+          {props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.approvals[props.department].status:
+            <div>
+              <button id={props.Key} onClick={props.handleAccept}>Approve</button>
+              <button id={props.Key} onClick={props.handleDecline}>Decline</button>
+            </div>
+          }
         </td>
       </tr>
     </React.Fragment>
