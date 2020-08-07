@@ -1,5 +1,5 @@
 ifeq ($(shell uname -s),Linux)
-	HOST_IP := $(shell ip -6 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+	HOST_IP := $(shell ip -4 addr show wlp59s0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 endif
 ifeq ($(shell uname -s),Darwin)
 	HOST_IP := $(shell ipconfig getifaddr en0)

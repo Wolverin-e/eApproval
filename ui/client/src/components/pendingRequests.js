@@ -1,5 +1,7 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
+import { saveAs } from 'file-saver'
+
 
 class PendingRequest extends React.Component {
 
@@ -10,36 +12,76 @@ class PendingRequest extends React.Component {
       request: {
         req_key: 'PENDING',
         department: this.props.department,
-        remarks: '',
-        pvtRemarks: {
-          text:''
-        },
-      }
+        remarks: {},
+        pvtRemarks: {},
+      },
     }
     this.handleAccept = this.handleAccept.bind(this)
     this.handleDecline = this.handleDecline.bind(this)
     this.onChange = this.onChange.bind(this)
+    this.getReport = this.getReport.bind(this)
+
   }
 
-  onChange(e) {
+  async onChange(e) {
     if (e.target.id === 'Public_Remarks') {
+      console.log("PbulicRemarks")
       this.setState({ 
         request: {
           ...this.state.request, 
-          remarks: e.target.value.toString()
+          remarks: {
+            ...this.state.request.remarks,
+            text:e.target.value.toString(),
+          }
         }
       });
-    } else if (e.target.id === 'Private_Request_text') {
+    } if (e.target.id == 'Public_Request_file') {
+      console.log("PublicRemarksF")
+      var file= {name:'',data:''};
+      file.name = e.target.files[0].name;
+      var reader = new FileReader();
+      reader.onload = (evt) => {file.data = evt.target.result}
+      reader.readAsDataURL(e.target.files[0]);
+
+      this.setState({
+        request: {
+          ...this.state.request, 
+          remarks: {
+            ...this.state.request.remarks,
+            file:file, 
+          }
+        }
+      })
+    } if (e.target.id == 'Private_Remarks_text') {
+      console.log("PvtRemarks")
       this.setState({
         request: {
           ...this.state.request, 
           pvtRemarks: {
             ...this.state.request.pvtRemarks,
-            text:e.target.value.toString() 
+            text:e.target.value.toString(), 
           }
         } 
       });
+    } if (e.target.id == 'Private_Remarks_file') {
+      console.log("PvtRemarksF")
+      var file= {name:'',data:''};
+      file.data = e.target.files[0].name;
+      var reader = new FileReader();
+      reader.onload= (e) => {file.data=e.target.result}
+      reader.readAsDataURL(e.target.files[0]);
+
+        this.setState({
+          request: {
+            ...this.state.request,
+            pvtRemarks: {
+              ...this.state.request.pvtRemarks,
+              file:file, 
+            }
+          }
+        })
     }
+    console.log(this.state.request)
   }
 
   handleAccept(e) {
@@ -83,6 +125,11 @@ class PendingRequest extends React.Component {
     }).catch(err => err);
   }
 
+  getReport(data, name) {
+        saveAs(data, name)
+  }
+
+
   componentDidMount() {
     fetch('http://127.0.0.1:'+(this.props.department==="ORG1"?"8000":"8001")+'/api/pendingRequests')
     .then(res => res.json())
@@ -106,18 +153,36 @@ class PendingRequest extends React.Component {
             <tr>
               <th>Title</th>
               <th>Description</th>
-              <th>ORG1</th>
-              <th>ORG2</th>
+              <th>Proposal</th>
               <th>Request By</th>
+              {this.props.department=="ORG1"?null:
+                <React.Fragment>
+                  <th>ORG1</th>
+                      <th>Remarks by ORG1</th>
+                      <th>Report by ORG1</th>
+                </React.Fragment>
+              }
+
+              {this.props.department=="ORG2"?null:
+                <React.Fragment>
+                  <th>ORG2</th>
+                      <th>Remarks by ORG2</th>
+                      <th>Report by ORG2</th>
+                </React.Fragment>
+              }
+              
               <th>Public Remarks</th>
+              <th>Public Report</th>
               <th>Private Remarks</th>
+              <th>Private Report</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
+            {console.log(this.state.data)}
             {this.state.data.map((arg, i) => {
               return arg.Val.requestedDepartments.includes(this.props.department)?
-                <PendingRequestObj key={i} department={this.props.department} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline}/>:
+                <PendingRequestObj key={i} department={this.props.department} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline} getReport={this.getReport} ref={{refPrivateReport:this.refPrivateReport, refPublicReport:this.refPublicReport}}/>:
                 true;
             })}
           </tbody>
@@ -129,39 +194,73 @@ class PendingRequest extends React.Component {
 
 
 const PendingRequestObj = (props) => {
-  return (
-  <React.Fragment>
-    <tr>
-      <td data-th="Title">{props.Val.title}</td>
-      <td data-th="Description">{props.Val.description}</td>
-      <td data-th="ORG1">
-        {props.Val.approvals.ORG1?props.Val.approvals.ORG1.status:'------'}
-      </td>
-      <td data-th="ORG2">
-        {props.Val.approvals.ORG2?props.Val.approvals.ORG2.status:'------'}
-      </td>
-      <td data-th="Request By">{props.Val.from_user}</td>
-      <td data-th="Public Remarks">
-        {
-          props.Val.remarks[props.department]?
-            props.Val.remarks[props.department].text:
-            <input type="textfield" id="Public_Remarks" name="Public_Remarks_text" onChange={props.onChange} />
+    return (
+    <React.Fragment>
+      <tr>
+        <td data-th="Title">{props.Val.title}</td>
+        <td data-th="Description">{props.Val.description}</td>
+        <td data-th="Proposal"><button onClick={() => props.getReport(props.Val.user_proposal.data,props.Val.user_proposal.name)}>Download</button></td>
+        <td data-th="Request By">{props.Val.from_user}</td>
+        {props.department=="ORG1"?null:
+          <React.Fragment>
+          <td data-th="ORG1">
+            {props.Val.approvals.ORG1?props.Val.approvals.ORG1.status:'------'}
+          </td>
+            {props.Val.approvals.ORG2.status!='PENDING'? 
+            <React.Fragment>
+              <td data-th="Public remarks">{props.Val.remarks.ORG1}</td>
+            <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.file.data,props.Val.remarks.file.name)}>Download</button></td>
+            </React.Fragment>
+            :<React.Fragment>
+              <td>-----</td>
+              <td>-----</td>
+            </React.Fragment>
+
+            }
+          </React.Fragment>
         }
-      </td>
-      <td data-th="Private Remarks">
-        {
-          props.Val.privateDataSet[props.department]?
-            props.Val.privateDataSet[props.department].text:
-            <input type="textfield" id="Private_Request_text" name="Private_Remarks_text" onChange={props.onChange} />
+        {props.department=="ORG2"?null:
+          <React.Fragment>
+          <td data-th="ORG2">
+            {props.Val.approvals.ORG2?props.Val.approvals.ORG2.status:'------'}
+          </td>
+          {props.Val.approvals.ORG2.status!='PENDING'? 
+          <React.Fragment>
+            <td data-th="Public remarks">{props.Val.remarks.ORG2}</td>
+            <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.file.data,props.Val.remarks.file.name)}>Download</button></td>
+          </React.Fragment>
+          :<React.Fragment>
+          <td>-----</td>
+          <td>-----</td>
+        </React.Fragment>
+            }
+          </React.Fragment>
         }
-      </td>
-      <td>
-        <button id={props.Key} onClick={props.handleAccept}>Approve</button>
-        <button id={props.Key} onClick={props.handleDecline}>Decline</button>
-      </td>
-    </tr>
-  </React.Fragment>
-  )
+        <td data-th="Public Remarks">
+          {
+              <input type="textfield" id="Public_Remarks" name="Public_Remarks_text" onChange={props.onChange} />
+          }
+        </td>
+        <td data-th="Public Report">
+              <input type="file" name="Public_Request_file" id="Public_Request_file" onChange={props.onChange}/>
+        </td>
+        <td data-th="Private Remarks">
+          {
+              <input type="textfield" id="Private_Remarks_text" name="Private_Remarks_text" onChange={props.onChange} />
+          }
+        </td>
+        <td data-th="Private Report">
+              <input type="file" name="Private_Remarks_file" id="Private_Remarks_file" onChange={props.onChange}/>
+        </td>
+        <td>
+          <button id={props.Key} onClick={props.handleAccept}>Approve</button>
+          <button id={props.Key} onClick={props.handleDecline}>Decline</button>
+        </td>
+      </tr>
+    </React.Fragment>
+    )
 }
+
+
 
 export default PendingRequest

@@ -11,8 +11,8 @@ class createRequest extends React.Component {
       from_user: '',
       title: '',
       descriptions: '',
-      user_proposal: {},
       requestedDepartments: [],
+      user_proposal: {name: "", data: ""},
     }
     this.onChange = this.onChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -81,13 +81,23 @@ class createRequest extends React.Component {
   }
 
   async handleFileUpload(){
+    const self = this;
     console.log(this.fileInput.current.files[0]);
     var reader = new FileReader();
+    // fetch(evt.target.result).then(async res => {
+      //   saveAs(await res.blob(), this.fileInput.current.files[0].name);
     reader.onload = evt => {
-      console.log(evt.target.result);
       fetch(evt.target.result).then(async res => {
-        saveAs(await res.blob(), this.fileInput.current.files[0].name);
+        const name = self.fileInput.current.files[0].name;
+        const data = await res.blob();
+        this.setState({
+          ['user_proposal']: {
+            ...self.state.user_proposal,
+            name: name,
+            data: data,
+            }})
       });
+      console.log(this.state.user_proposal);
     }
     reader.readAsDataURL(this.fileInput.current.files[0]);
   }
@@ -104,7 +114,7 @@ class createRequest extends React.Component {
           <label htmlFor="descriptions">description:</label><br/>
           <input type="textfield" id="descriptions" name="descriptions" onChange={this.onChange} /><br/><br/>
           <label htmlFor="proposal">Proposal:</label><br/>
-          <input type="file" id="proposal" ref={this.fileInput} /><br/><br/>
+          <input type="file" id="proposal" ref={this.fileInput}/><br/><br/>
           <label htmlFor="descriptions">Departments:</label><br/>
           <input type="checkbox" id="ORG1" name="ORG1" value="ORG1" onChange={this.onChange} />
           <label htmlFor="ORG1"> ORG1</label><br/>
