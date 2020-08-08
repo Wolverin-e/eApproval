@@ -1,6 +1,5 @@
 import React from 'react'
 import fetch from 'isomorphic-fetch'
-import { saveAs } from 'file-saver'
 
 
 class createRequest extends React.Component {
@@ -18,7 +17,6 @@ class createRequest extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     
     this.fileInput = React.createRef();
-    this.handleFileUpload = this.handleFileUpload.bind(this);
   }
 
   onChange(e) {
@@ -78,28 +76,6 @@ class createRequest extends React.Component {
     } else {
       return "";
     }
-  }
-
-  async handleFileUpload(){
-    const self = this;
-    console.log(this.fileInput.current.files[0]);
-    var reader = new FileReader();
-    // fetch(evt.target.result).then(async res => {
-      //   saveAs(await res.blob(), this.fileInput.current.files[0].name);
-    reader.onload = evt => {
-      fetch(evt.target.result).then(async res => {
-        const name = self.fileInput.current.files[0].name;
-        const data = await res.blob();
-        this.setState({
-          ['user_proposal']: {
-            ...self.state.user_proposal,
-            name: name,
-            data: data,
-            }})
-      });
-      console.log(this.state.user_proposal);
-    }
-    reader.readAsDataURL(this.fileInput.current.files[0]);
   }
 
   render() {

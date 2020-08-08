@@ -205,10 +205,10 @@ const PendingRequestObj = (props) => {
           <td data-th="ORG1">
             {props.Val.approvals.ORG1?props.Val.approvals.ORG1.status:'------'}
           </td>
-            {props.Val.approvals.ORG2.status!='PENDING'? 
+            {props.Val.approvals.ORG1.status!=='PENDING'? 
             <React.Fragment>
-              <td data-th="Public remarks">{props.Val.remarks.ORG1}</td>
-            <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.file.data,props.Val.remarks.file.name)}>Download</button></td>
+              <td data-th="Public remarks">{props.Val.remarks.ORG1.text}</td>
+            <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.ORG1.file.data,props.Val.remarks.ORG1.file.name)}>Download</button></td>
             </React.Fragment>
             :<React.Fragment>
               <td>-----</td>
@@ -225,8 +225,8 @@ const PendingRequestObj = (props) => {
           </td>
           {props.Val.approvals.ORG2.status!='PENDING'? 
           <React.Fragment>
-            <td data-th="Public remarks">{props.Val.remarks.ORG2}</td>
-            <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.file.data,props.Val.remarks.file.name)}>Download</button></td>
+            <td data-th="Public remarks">{props.Val.remarks.ORG2.text}</td>
+            <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.ORG2.file.data,props.Val.remarks.ORG2.file.name)}>Download</button></td>
           </React.Fragment>
           :<React.Fragment>
           <td>-----</td>
