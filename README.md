@@ -1,3 +1,4 @@
+
 # eApproval
 B.Tech Project On eApproval using Blockchain - Hyperledger Fabric.
 
@@ -38,9 +39,24 @@ B.Tech Project On eApproval using Blockchain - Hyperledger Fabric.
 		- 1 CA-Peer
 	- An Orderer ORG with 1 Peer
 	- 2 API Containers
-<p align="center">
-	<img src="documentation/Overall/Network/eApproval.png" height="350px">
-</p>
+	<p align="center">
+		<img src="documentation/Overall/Network/eApproval.png" height="350px">
+	</p>
+
+	- PORT Mapping
+		| Container | Port |
+		|--|--|
+		| peer0.org1.eapproval.com  | 7051  |
+		| peer0.org2.eapproval.com  | 9051  |
+		| couchdb0 | 5984 |
+		| couchdb1 | 7984 |
+		| ca_peerOrg1 | 7054 |
+		| ca_peerOrg2 | 9054 |
+		| orderer.eapproval.com | 7050 |
+		| API1 | 8000 |
+		| API2 | 8001 |
+		| explorer.eapproval.com | 8080 |
+		
 
 3. ## Chaincode
 	- The Chaincode has the following duties,
