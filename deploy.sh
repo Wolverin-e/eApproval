@@ -45,7 +45,7 @@ fi
 CHAIN_CODE_ONLY=true
 NO_CHAINCODE=true
 IGNORE_ERRORS=false
-POPULATE_DB=true
+POPULATE_DB=false
 START_EXPLORER=false
 
 
@@ -428,18 +428,16 @@ if [ "${POPULATE_DB}" == "true" ]; then
 fi
 
 if [ "${START_EXPLORER}" != "false" ]; then
-  pushd ./configs > /dev/null
   echo
   echo "#######################################"
   echo "####### Starting The EXPLORER #########"
   echo "#######################################"
 
   docker-compose \
-  -f docker-compose-explorer.yaml \
+  -f ./configs/docker-compose-explorer.yaml \
   up -d
 
   checkResult
 
-  popd > /dev/null
   echo
 fi
