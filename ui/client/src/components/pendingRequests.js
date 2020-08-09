@@ -24,8 +24,12 @@ class PendingRequest extends React.Component {
   }
 
   async onChange(e) {
+
+    var file= {name:'',data:''}
+    var reader = new FileReader()
+
     if (e.target.id === 'Public_Remarks') {
-      console.log("PbulicRemarks")
+      // console.log("PublicRemarks")
       this.setState({ 
         request: {
           ...this.state.request, 
@@ -35,11 +39,9 @@ class PendingRequest extends React.Component {
           }
         }
       });
-    } if (e.target.id == 'Public_Request_file') {
-      console.log("PublicRemarksF")
-      var file= {name:'',data:''};
-      file.name = e.target.files[0].name;
-      var reader = new FileReader();
+    }else if (e.target.id === 'Public_Request_file') {
+      // console.log("PublicRemarksFile")
+      file.name = e.target.files[0].name
       reader.onload = (evt) => {file.data = evt.target.result}
       reader.readAsDataURL(e.target.files[0]);
 
@@ -52,8 +54,8 @@ class PendingRequest extends React.Component {
           }
         }
       })
-    } if (e.target.id == 'Private_Remarks_text') {
-      console.log("PvtRemarks")
+    }else if (e.target.id === 'Private_Remarks_text') {
+      // console.log("PvtRemarks")
       this.setState({
         request: {
           ...this.state.request, 
@@ -63,11 +65,9 @@ class PendingRequest extends React.Component {
           }
         } 
       });
-    } if (e.target.id == 'Private_Remarks_file') {
-      console.log("PvtRemarksF")
-      var file= {name:'',data:''};
-      file.data = e.target.files[0].name;
-      var reader = new FileReader();
+    }else if (e.target.id === 'Private_Remarks_file') {
+      // console.log("PvtRemarksFile")
+      file.data = e.target.files[0].name
       reader.onload= (e) => {file.data=e.target.result}
       reader.readAsDataURL(e.target.files[0]);
 
@@ -81,13 +81,12 @@ class PendingRequest extends React.Component {
           }
         })
     }
-    console.log(this.state.request)
+    // console.log(this.state.request)
   }
 
   handleAccept(e) {
     let request = {...this.state.request, req_key:e.target.id}
-    console.log(e.target.id)
-    console.log(request)
+    console.log(e.target.id, request)
     fetch('http://127.0.0.1:8000/api/approve', {
       method: 'POST',
       body: JSON.stringify(request),
@@ -96,7 +95,7 @@ class PendingRequest extends React.Component {
       }
     }).then(response =>  {
       if (response.status >= 200 && response.status < 300) {
-        console.log(response.json());
+        // console.log(response.json());
         window.location.reload();
         return response;
       } else {
@@ -107,7 +106,7 @@ class PendingRequest extends React.Component {
 
   handleDecline(e) {
     let request = {...this.state.request, req_key:e.target.id}
-    console.log("HandleDecline Iniciated")
+    console.log(e.target.id, request)
     fetch('http://127.0.0.1:8000/api/decline', {
       method: 'POST',
       body: JSON.stringify(request),
@@ -134,7 +133,7 @@ class PendingRequest extends React.Component {
     fetch('http://127.0.0.1:'+(this.props.department==="ORG1"?"8000":"8001")+'/api/pendingRequests')
     .then(res => res.json())
     .then( (res) => {
-      console.log(JSON.parse(res.response));
+      // console.log(JSON.parse(res.response));
       return JSON.parse(res.response);
     })
     .then((a) => {
@@ -154,7 +153,7 @@ class PendingRequest extends React.Component {
               <th>Description</th>
               <th>Proposal</th>
               <th>Request By</th>
-              {this.props.department=="ORG1"?null:
+              {this.props.department==="ORG1"?null:
                 <React.Fragment>
                   <th>ORG1</th>
                       <th>Remarks by ORG1</th>
@@ -162,7 +161,7 @@ class PendingRequest extends React.Component {
                 </React.Fragment>
               }
 
-              {this.props.department=="ORG2"?null:
+              {this.props.department==="ORG2"?null:
                 <React.Fragment>
                   <th>ORG2</th>
                       <th>Remarks by ORG2</th>
@@ -178,7 +177,6 @@ class PendingRequest extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {console.log(this.state.data)}
             {this.state.data.map((arg, i) => {
               return arg.Val.requestedDepartments.includes(this.props.department)?
                 <PendingRequestObj key={i} department={this.props.department} Val={arg.Val} Key={arg.Key} onChange={this.onChange} handleAccept={this.handleAccept} handleDecline={this.handleDecline} getReport={this.getReport} ref={{refPrivateReport:this.refPrivateReport, refPublicReport:this.refPublicReport}}/>:
@@ -200,7 +198,7 @@ const PendingRequestObj = (props) => {
         <td data-th="Description">{props.Val.description}</td>
         <td data-th="Proposal"><button onClick={() => props.getReport(props.Val.user_proposal.data,props.Val.user_proposal.name)}>Download</button></td>
         <td data-th="Request By">{props.Val.from_user}</td>
-        {props.department=="ORG1"?null:
+        {props.department==="ORG1"?null:
           <React.Fragment>
           <td data-th="ORG1">
             {props.Val.approvals.ORG1?props.Val.approvals.ORG1.status:'------'}
@@ -218,12 +216,12 @@ const PendingRequestObj = (props) => {
             }
           </React.Fragment>
         }
-        {props.department=="ORG2"?null:
+        {props.department==="ORG2"?null:
           <React.Fragment>
           <td data-th="ORG2">
             {props.Val.approvals.ORG2?props.Val.approvals.ORG2.status:'------'}
           </td>
-          {props.Val.approvals.ORG2.status!='PENDING'? 
+          {props.Val.approvals.ORG2.status!=='PENDING'? 
           <React.Fragment>
             <td data-th="Public remarks">{props.Val.remarks.ORG2.text}</td>
             <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks.ORG2.file.data,props.Val.remarks.ORG2.file.name)}>Download</button></td>
@@ -237,35 +235,35 @@ const PendingRequestObj = (props) => {
         }
         <td data-th="Public Remarks">
           {
-            props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.approvals[props.department].status!=='PENDING'?
             props.Val.remarks[props.department].text:
               <input type="textfield" id="Public_Remarks" name="Public_Remarks_text" onChange={props.onChange} />
           }
         </td>
         <td data-th="Public Report">
           {
-            props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.approvals[props.department].status!=='PENDING'?
               <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks[props.department].file.data, props.Val.remarks[props.department].file.name)}>Download</button></td>:
               <input type="file" name="Public_Request_file" id="Public_Request_file" onChange={props.onChange}/>
             }
           </td>
         <td data-th="Private Remarks">
           {
-            props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.approvals[props.department].status!=='PENDING'?
             props.Val.privateDataSet[props.department].text:
               <input type="textfield" id="Private_Remarks_text" name="Private_Remarks_text" onChange={props.onChange} />
           }
         </td>
         <td data-th="Private Report">
           {
-            props.Val.approvals[props.department].status!='PENDING'?
+            props.Val.approvals[props.department].status!=='PENDING'?
               <td data-th="Public report"><button onClick={() => props.getReport(props.Val.privateDataSet[props.department].file.data, props.Val.privateDataSet[props.department].file.name)}>Download</button></td>:
               <input type="file" name="Private_Remarks_file" id="Private_Remarks_file" onChange={props.onChange}/>
 
           }
         </td>
         <td>
-          {props.Val.approvals[props.department].status!='PENDING'?
+          {props.Val.approvals[props.department].status!=='PENDING'?
             props.Val.approvals[props.department].status:
             <div>
               <button id={props.Key} onClick={props.handleAccept}>Approve</button>
