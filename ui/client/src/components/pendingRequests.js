@@ -243,7 +243,7 @@ const PendingRequestObj = (props) => {
         <td data-th="Public Report">
           {
             props.Val.approvals[props.department].status!=='PENDING'?
-              <td data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks[props.department].file.data, props.Val.remarks[props.department].file.name)}>Download</button></td>:
+              <div data-th="Public report"><button onClick={() => props.getReport(props.Val.remarks[props.department].file.data, props.Val.remarks[props.department].file.name)}>Download</button></div>:
               <input type="file" name="Public_Request_file" id="Public_Request_file" onChange={props.onChange}/>
             }
           </td>
@@ -257,7 +257,7 @@ const PendingRequestObj = (props) => {
         <td data-th="Private Report">
           {
             props.Val.approvals[props.department].status!=='PENDING'?
-              <td data-th="Public report"><button onClick={() => props.getReport(props.Val.privateDataSet[props.department].file.data, props.Val.privateDataSet[props.department].file.name)}>Download</button></td>:
+              <div data-th="Public report"><button onClick={() => props.getReport(props.Val.privateDataSet[props.department].file.data, props.Val.privateDataSet[props.department].file.name)}>Download</button></div>:
               <input type="file" name="Private_Remarks_file" id="Private_Remarks_file" onChange={props.onChange}/>
 
           }
