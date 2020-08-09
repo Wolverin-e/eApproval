@@ -44,6 +44,7 @@ class createRequest extends React.Component {
   async handleSubmit() {
     let user_proposal = await this.getFileContentInBase64();
     this.setState({user_proposal});
+    this.setState({requestedDepartments: JSON.stringify(this.state.requestedDepartments)});
     console.log(this.state, JSON.stringify(this.state))
     fetch('http://127.0.0.1:8000/api/createRequest', {
       method: 'POST',
